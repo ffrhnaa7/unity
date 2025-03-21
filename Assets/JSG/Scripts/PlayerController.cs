@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject Camera;
+    //public GameObject Camera;
     public float RotationSpeed = 1.0f;
     [SerializeField]
     float speed;
@@ -12,15 +12,17 @@ public class PlayerController : MonoBehaviour
     Rigidbody body;
     Animator anim;
     Vector3 inputVector;
+    Transform cameraTransform;
     private void Awake()
     {
         body = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
+        cameraTransform = Camera.main.transform;
     }
 
     private void FixedUpdate()
     {
-        Vector3 moveVec = new Vector3(Vector3.Dot(Camera.transform.forward, inputVector), 0, Vector3.Dot(Camera.transform.right, inputVector));
+        Vector3 moveVec = new Vector3(Vector3.Dot(cameraTransform.forward, inputVector), 0, Vector3.Dot(cameraTransform.right, inputVector));
         body.linearVelocity += moveVec * speed * Time.deltaTime;
 
         if (moveVec != Vector3.zero)
@@ -44,6 +46,5 @@ public class PlayerController : MonoBehaviour
         inputVector.x = context.ReadValue<Vector2>().y;
         inputVector.z = context.ReadValue<Vector2>().x;
         inputVector.Normalize();
-        Debug.Log($"{inputVector}");
     }
 }
