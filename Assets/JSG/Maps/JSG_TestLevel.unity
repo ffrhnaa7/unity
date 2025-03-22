@@ -228,6 +228,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 56995825459094021, guid: 6aed7d5a7a495f94d8d55a61815701c6, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 829134890054924479, guid: 6aed7d5a7a495f94d8d55a61815701c6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5966759
@@ -390,9 +394,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 912a7b1b125e50447b8909db23d754ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {fileID: 1353331515}
+  Pivot: {fileID: 0}
   RotationSensitive: 3
+  RotationMin: -75
+  RotationMax: 75
   CameraSpeed: 10
+  DefaultCameraDist: 4
 --- !u!1 &1353331515 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 56995825459094021, guid: 6aed7d5a7a495f94d8d55a61815701c6, type: 3}
@@ -460,7 +467,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd1185868a74f79409bec017987e3970, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Camera: {fileID: 1286101205}
   RotationSpeed: 2.5
   speed: 10
 --- !u!114 &1353331520
