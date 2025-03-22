@@ -14,12 +14,13 @@ public class PlayerMainCamera : MonoBehaviour
     float mouseAxisY;
     float smoothTime = 0.12f;
     public float CameraSpeed = 10.0f;
-    public float cameraDist = 10;
+    public float DefaultCameraDist = 4;
     Transform pivotTransform;
 
     Vector3 targetRotation;
     Vector3 currentVel;
     Vector3 offset = new Vector3(0, 2f, 0f);
+    float cameraDist = 4;
     private void Awake()
     {
         Pivot = GameObject.FindWithTag("Player");
@@ -29,41 +30,46 @@ public class PlayerMainCamera : MonoBehaviour
     private void Update()
     {
         targetRotation = Vector3.SmoothDamp(targetRotation, targetRotation + new Vector3(-mouseAxisY, mouseAxisX), ref currentVel, smoothTime);
-        targetRotation.x = Mathf.Clamp(targetRotation.x, RotationMin, RotationMax); ;
+        targetRotation.x = Mathf.Clamp(targetRotation.x, RotationMin, RotationMax);
         transform.eulerAngles = targetRotation;
 
+        Debug.Log($"{transform.position}");
     }
     private void FixedUpdate()
     {
         
-        //transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * CameraSpeed);
     }
 
     private void LateUpdate()
     {
-        RaycastHit hit;
-        float dist;
-
-        if (Physics.Raycast(transform.position, transform.forward, out hit, cameraDist)) 
-        {
-            dist = Vector3.Distance(hit.point, pivotTransform.position) * .95f;
-        }
-        else
-        {
-            dist = cameraDist;
-        }
-        Vector3 targetPos = pivotTransform.position + offset - dist * transform.forward;
-        transform.position = targetPos;
-        //transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref currentVel, smoothTime);
+        SetDistSpringArm();
     }
     public void OnLook(InputAction.CallbackContext context)
     {
         Vector2 inputValue = context.ReadValue<Vector2>();
-        Debug.Log($"{inputValue}");
         mouseAxisX = inputValue.x * RotationSensitive;
         mouseAxisY = inputValue.y * RotationSensitive;
         mouseAxisX = Mathf.Clamp(mouseAxisX, RotationMin, RotationMax);
-        
-        //transform.position -= transform.forward * offset.magnitude;
+    }
+
+    private void SetDistSpringArm()
+    {
+        RaycastHit hit;
+        float dist;
+        Vector3 rayOrigin = pivotTransform.position + offset;
+
+        if (Physics.Raycast(rayOrigin, -transform.forward, out hit, DefaultCameraDist) && hit.collider.gameObject.name != "Player")
+        {
+            Debug.Log($"Raycast hit, {hit.point}");
+            float targetDist = Vector3.Distance(hit.point, pivotTransform.position) * 0.8f;
+            cameraDist = Mathf.Lerp(cameraDist, targetDist, Time.deltaTime * 10);
+        }
+        else
+        {
+            cameraDist = Mathf.Lerp(cameraDist, DefaultCameraDist, Time.deltaTime * 10);
+        }
+
+        Vector3 targetPos = pivotTransform.position + offset - cameraDist * transform.forward;
+        transform.position = targetPos;
     }
 }
