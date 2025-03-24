@@ -56,17 +56,16 @@ public class PlayerMainCamera : MonoBehaviour
         float dist;
         Vector3 rayOrigin = pivotTransform.position + offset;
 
-        // Raycast ½Ã°¢È­
         if (Physics.Raycast(rayOrigin, -transform.forward, out hit, DefaultCameraDist))
         {
-            float targetDist = Vector3.Distance(hit.point, pivotTransform.position) * 0.8f;
+            float targetDist = Vector3.Distance(hit.point, rayOrigin) * 0.8f;
             cameraDist = Mathf.Lerp(cameraDist, targetDist, Time.deltaTime * 10);
             Debug.DrawRay(rayOrigin, -transform.forward * cameraDist, Color.red);
         }
         else
         {
             cameraDist = Mathf.Lerp(cameraDist, DefaultCameraDist, Time.deltaTime * 10);
-            Debug.DrawRay(rayOrigin, -transform.forward * DefaultCameraDist, Color.red);
+            Debug.DrawRay(rayOrigin, -transform.forward * DefaultCameraDist, Color.green);
         }
 
         Vector3 targetPos = pivotTransform.position + offset - cameraDist * transform.forward;
