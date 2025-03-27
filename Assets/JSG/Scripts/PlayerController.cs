@@ -28,11 +28,22 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 moveVec = new Vector3(Vector3.Dot(cameraTransform.forward, inputVector), 0, Vector3.Dot(cameraTransform.right, inputVector));
+        moveVec.Normalize();
         if (inputVector != Vector3.zero)
             body.linearVelocity = moveVec * speed;
+        else
+            body.linearVelocity /= 1.1f;
 
         if (moveVec != Vector3.zero)
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(moveVec), RotationSpeed * Time.deltaTime);
+
+        float vertical = Vector3.Dot(transform.forward, moveVec);
+        float horizontal = Vector3.Dot(transform.right, moveVec);
+
+        anim.SetFloat("v", vertical);
+        anim.SetFloat("h", horizontal);
+
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -44,7 +55,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
     }
 
     public void OnMove(InputAction.CallbackContext context)
