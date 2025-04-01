@@ -15,6 +15,10 @@ namespace StarterAssets
     public class ThirdPersonController : MonoBehaviour
     {
         [Header("Player")]
+
+        [Tooltip("Player's Max HP")]
+        public float MaxHP = 100.0f;
+
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
@@ -87,6 +91,8 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
         private bool _armed = false;
+        private float _hp;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -152,6 +158,9 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            //
+            _hp = MaxHP;
         }
 
         private void Update()
@@ -415,6 +424,12 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
+        }
+
+        public bool GetDamage(float damage)
+        {
+            _hp = Mathf.Max(0, _hp - damage);
+            return true;
         }
     }
 }
