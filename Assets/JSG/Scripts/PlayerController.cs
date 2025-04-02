@@ -12,9 +12,12 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         [Header("Player")]
+
+        [Tooltip("Player's Max HP")]
+        public GameObject WeaponObject;
 
         [Tooltip("Player's Max HP")]
         public float MaxHP = 100.0f;
@@ -92,6 +95,7 @@ namespace StarterAssets
         private float _terminalVelocity = 53.0f;
         private bool _armed = false;
         private float _hp = 0.0f;
+        private int _attackCount = 0;
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -102,8 +106,9 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
-
-#if ENABLE_INPUT_SYSTEM 
+        private int _animIDAttackTrigger;
+        private int _animIDAttackCount;
+#if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
         private Animator _animator;
@@ -145,7 +150,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
-            _weapon = GetComponent<WeaponController>();
+            _weapon = WeaponObject.GetComponent<WeaponController>();
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -184,6 +189,8 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDAttackTrigger = Animator.StringToHash("AttackTrigger");
+            _animIDAttackCount = Animator.StringToHash("AttackCount");
         }
 
         private void GroundedCheck()
@@ -379,7 +386,10 @@ namespace StarterAssets
                 // 발도중엔 공격이 나가도록 구현
                 else
                 {
-
+                    _animator.SetTrigger(_animIDAttackTrigger);
+                    _animator.SetInteger(_animIDAttackCount, _attackCount);
+                    //_attackCount++;
+                    _input.attack = false;
                 }
             }
         }
@@ -429,6 +439,15 @@ namespace StarterAssets
         {
             _hp = Mathf.Max(0, _hp - damage);
             return true;
+        }
+
+        public void OnAttackStart()
+        {
+            _weapon.WeaponEnable(true);
+        }
+        public void OnAttackEnd()
+        {
+            _weapon.WeaponEnable(false);
         }
     }
 }
