@@ -16,7 +16,6 @@ namespace StarterAssets
     {
         [Header("Player")]
 
-        [Tooltip("Player's Max HP")]
         public GameObject WeaponObject;
 
         [Tooltip("Player's Max HP")]

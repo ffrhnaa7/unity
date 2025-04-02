@@ -7,6 +7,8 @@ public class WeaponController : MonoBehaviour
     public TrailRenderer Trail;
     private CapsuleCollider _meleeArea;
 
+    [SerializeField]
+    private float _damage = 10;
     private float _dalayTime = 0.25f;
     private void Awake()
     {
@@ -49,5 +51,12 @@ public class WeaponController : MonoBehaviour
         Trail.enabled = Enable;
         _meleeArea.enabled = Enable;
     }
-    
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out IEnemy Enemy))
+        {
+            Enemy.GetDamage(_damage);
+        }
+    }
 }
