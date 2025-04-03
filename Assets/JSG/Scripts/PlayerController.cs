@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -95,6 +96,16 @@ namespace StarterAssets
         private bool _armed = false;
         private float _hp = 0.0f;
         private int _attackCount = 0;
+        [Flags]
+        public enum EPlayerBehavior : int
+        {
+            Move    = 0b_0000_0001,
+            Dodge   = 0b_0000_0010,
+            Damaged = 0b_0000_0100,
+            Attack  = 0b_0000_1000,
+        }
+        private uint _behavior;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -164,6 +175,7 @@ namespace StarterAssets
 
             // 
             _hp = MaxHP;
+            _behavior |= uint.MaxValue;
         }
 
         private void Update()
@@ -230,6 +242,8 @@ namespace StarterAssets
 
         private void Move()
         {
+            if (!HasBehavior(EPlayerBehavior.Move)) return;
+
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_armed == true && _input.sprint == true)
@@ -373,7 +387,7 @@ namespace StarterAssets
 
         private void Attack()
         {
-            if (_input.attack)
+            if (_input.attack && HasBehavior(EPlayerBehavior.Attack))
             {
                 if (_armed == false)
                 {
@@ -420,7 +434,7 @@ namespace StarterAssets
             {
                 if (FootstepAudioClips.Length > 0)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
+                    var index = UnityEngine.Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
                 }
             }
@@ -434,6 +448,8 @@ namespace StarterAssets
             }
         }
 
+
+        // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
             _hp = Mathf.Max(0, _hp - damage);
@@ -447,6 +463,19 @@ namespace StarterAssets
         public void OnAttackEnd()
         {
             _weapon.WeaponEnable(false);
+        }
+
+        public void EnableBehavior(EPlayerBehavior Behavior)
+        {
+            _behavior |= (uint)Behavior;
+        }
+        public void DisableBehavior(EPlayerBehavior Behavior)
+        {
+            _behavior &= ~(uint)Behavior;
+        }
+        public bool HasBehavior(EPlayerBehavior Behavior)
+        {
+            return (_behavior & (uint)Behavior) != 0;
         }
     }
 }
