@@ -1435,7 +1435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5436217278532705071, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
       propertyPath: dodgeTimeout
-      value: 1.2
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 5436217278532705071, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
       propertyPath: GroundedOffset
