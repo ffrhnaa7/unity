@@ -22,6 +22,7 @@ public class AttackReset : StateMachineBehaviour
     {
         PlayerController pc = animator.GetComponent<PlayerController>();
         pc.DisableBehavior(PlayerController.EPlayerBehavior.Move);
+        pc.DisableBehavior(PlayerController.EPlayerBehavior.Dodge);
         Debug.Log("Disable Move");
     }
 
@@ -30,6 +31,7 @@ public class AttackReset : StateMachineBehaviour
         animator.ResetTrigger(_triggerName);
         PlayerController pc = animator.GetComponent<PlayerController>();
         pc.EnableBehavior(PlayerController.EPlayerBehavior.Move);
+        pc.EnableBehavior(PlayerController.EPlayerBehavior.Dodge);
         Debug.Log("Enable Move");
     }
 }
