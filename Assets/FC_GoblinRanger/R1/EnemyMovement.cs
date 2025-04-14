@@ -1,187 +1,166 @@
-//hana's part
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections; 
+using System.Collections;
 using System.Collections.Generic;
-using StarterAssets;
-using UnityEngine.Scripting.APIUpdating;
-using System.Runtime.Serialization.Formatters;
 
 
-
-public class GoblinAI : MonoBehaviour
+public enum GoblinState
 {
+    Idle,
+    Patrol,
+    Chase,
+    Attack,
+    Dead
+}
 
+public class GoblinAI : MonoBehaviour, IEnemy
+{
     public NavMeshAgent navMeshAgent;
-    public float startWaitTime = 4;
-    public float timeToRotate = 2;
-    public float speedWalk = 6;
-    public float speedRun = 9;
-
-    public float viewRadius = 15;
-    public float viewAngle = 90;
+    public Animator m_Animator;
+    public Transform[] waypoints;
     public LayerMask playerMask;
     public LayerMask obstacleMask;
-    public float meshResolution = 1f;
-    public int edgeIterations = 4;
-    public float edgeDistance = 0.5f;
-    public Transform[] waypoints;
-    int m_CurrentWaypointIndex;
 
-    Vector3 playerLastPosition = Vector3.zero;
-    Vector3 m_PlayerPosition;
-    float m_WaitTime;
-    float m_TimeToRotate;
-    bool m_PlayerInRange;
-    bool m_PlayerNear;
-    bool m_IsPatrol;
-    bool m_CaughtPlayer;
+    public float patrolSpeed = 2f;
+    public float chaseSpeed = 4f;
+    public float viewRadius = 15f;
+    public float viewAngle = 90f;
+    public float attackRange = 2.5f;
+    public float maxHp = 100f;
 
-    private void Awake() //used immediately when script is loaded a.k.a early setup
+    private GoblinState currentState;
+    private int currentWaypointIndex = 0;
+    private Transform player;
+    private float currentHp;
+
+    private void Awake()
     {
-        
-        
-    }
-
-    void Start()
-    {
-        m_PlayerPosition = Vector3.zero;
-        m_IsPatrol = true;
-        m_CaughtPlayer = false;
-        m_PlayerInRange = false;
-        m_WaitTime = startWaitTime;
-        m_TimeToRotate = timeToRotate;
-        m_CurrentWaypointIndex = 0;
+        m_Animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
+        currentHp = maxHp;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        navMeshAgent.isStopped = false;
-        navMeshAgent.speed = speedWalk;
-        navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
+        ChangeState(GoblinState.Idle);
     }
 
-    void Update() //runs every frame 
+    private void Update()
     {
-        EnvironmentView();
-
-        if(!m_IsPatrol){
-            Chasing();
-        }else{
-            Patroling();
-        }
-        
-
-    }
-
-    private void Chasing(){
-        m_PlayerNear = false;
-        playerLastPosition = Vector3.zero;
-
-        if (!m_CaughtPlayer){
-            Move(speedRun);
-            navMeshAgent.SetDestination(m_PlayerPosition);
-        }
-        if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance){
-            if(m_WaitTime <= 0 && !m_CaughtPlayer && Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) >= 6f){
-                m_IsPatrol = true;
-                m_PlayerNear = false;
-                Move(speedWalk);
-                m_TimeToRotate = timeToRotate;
-                m_WaitTime = startWaitTime;
-                navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
-            }else{
-                if(Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) >= 2.5f){
-                    Stop();
-                    m_WaitTime -= Time.deltaTime;
-                }
-            }
+        switch (currentState)
+        {
+            case GoblinState.Idle:
+                Idle();
+                break;
+            case GoblinState.Patrol:
+                Patrol();
+                break;
+            case GoblinState.Chase:
+                Chase();
+                break;
+            case GoblinState.Attack:
+                Attack();
+                break;
+            case GoblinState.Dead:
+                // Don't do anything if dead
+                break;
         }
     }
 
-    private void Patroling(){
-        if(m_PlayerNear){
-            if(m_TimeToRotate <= 0){
-                Move(speedWalk);
-                LookingPlayer(playerLastPosition);
-            }else{
-                Stop();
-                m_TimeToRotate -= Time.deltaTime;
-            }
-        }
-        else{
-            m_PlayerNear = false;
-            playerLastPosition = Vector3.zero;
-            navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
-            if(navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance){
-                if(m_WaitTime <= 0){
-                    NextPoint();
-                    Move(speedWalk);
-                    m_WaitTime = startWaitTime;
-                }else{
-                    Stop();
-                    m_WaitTime -= Time.deltaTime;
-                }
-            }
+    private void ChangeState(GoblinState newState)
+    {
+        currentState = newState;
+    }
 
+    private void Idle()
+    {
+        m_Animator.SetFloat("Speed", 0);
+
+        if (CanSeePlayer())
+        {
+            ChangeState(GoblinState.Chase);
+        }
+        else
+        {
+            ChangeState(GoblinState.Patrol);
         }
     }
 
-    void CaughtPlayer(){
-        m_CaughtPlayer = true;
+    private void Patrol()
+    {
+        m_Animator.SetFloat("Speed", patrolSpeed);
+        navMeshAgent.speed = patrolSpeed;
+
+        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance < 0.5f)
+        {
+            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+            navMeshAgent.SetDestination(waypoints[currentWaypointIndex].position);
+        }
+
+        if (CanSeePlayer())
+        {
+            ChangeState(GoblinState.Chase);
+        }
     }
-    void Move(float speed){
-        navMeshAgent.isStopped = false;
-        navMeshAgent.speed = speed;
+
+    private void Chase()
+    {
+        m_Animator.SetFloat("Speed", chaseSpeed);
+        navMeshAgent.speed = chaseSpeed;
+        navMeshAgent.SetDestination(player.position);
+
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (distance <= attackRange)
+        {
+            ChangeState(GoblinState.Attack);
+        }
+        else if (!CanSeePlayer())
+        {
+            ChangeState(GoblinState.Patrol);
+        }
     }
-    void Stop(){
+
+    private void Attack()
+    {
         navMeshAgent.isStopped = true;
-        navMeshAgent.speed = 0;
-    }
-    public void NextPoint(){
-        m_CurrentWaypointIndex = (m_CurrentWaypointIndex + 1) % waypoints.Length;
-        navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
-    }
+        m_Animator.SetBool("IsAttacking", true);
 
-    void LookingPlayer(Vector3 player){
-        navMeshAgent.SetDestination(player);
-        if(Vector3.Distance(transform.position, player) <= 0.3){
-            if(m_WaitTime <= 0){
-                m_PlayerNear = false;
-                Move(speedWalk);
-                navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
-                m_WaitTime = startWaitTime;
-                m_TimeToRotate = timeToRotate;
-            }else{
-                Stop();
-                m_WaitTime -= Time.deltaTime;
-            }
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (distance > attackRange)
+        {
+            m_Animator.SetBool("IsAttacking", false);
+            navMeshAgent.isStopped = false;
+            ChangeState(GoblinState.Chase);
         }
     }
 
-    void EnvironmentView(){
-        Collider[] playerInRange = Physics.OverlapSphere(transform.position, viewRadius, playerMask);
+    private bool CanSeePlayer()
+    {
+        if (Vector3.Distance(transform.position, player.position) > viewRadius) return false;
 
-        for(int i=0; i<playerInRange.Length; i++){
-            Transform player = playerInRange[i].transform;
-            Vector3 dirToPlayer = (player.position - transform.position).normalized;
-
-            if(Vector3.Angle(transform.forward, dirToPlayer)< viewAngle/2){
-                float dstToPlayer = Vector3.Distance(transform.position, player.position);
-                if(!Physics.Raycast(transform.position, dirToPlayer, dstToPlayer, obstacleMask)){
-                    m_PlayerInRange = true;
-                    m_IsPatrol = false;
-                }else{
-                    m_PlayerInRange = false;
-                }
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        if (Vector3.Angle(transform.forward, dirToPlayer) < viewAngle / 2)
+        {
+            if (!Physics.Raycast(transform.position, dirToPlayer, viewRadius, obstacleMask))
+            {
+                return true;
             }
-
-            if(Vector3.Distance(transform.position, player.position)> viewRadius){
-                m_PlayerInRange = false;
-            }
-
-            if(m_PlayerInRange){
-                m_PlayerPosition = player.transform.position;
-            }
-
         }
+        return false;
+    }
+
+    public void GetDamage(float damage)
+    {
+        currentHp -= damage;
+        if (currentHp <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        ChangeState(GoblinState.Dead);
+        navMeshAgent.isStopped = true;
+        m_Animator.SetTrigger("Die");
+        Destroy(gameObject, 2f);
     }
 }
