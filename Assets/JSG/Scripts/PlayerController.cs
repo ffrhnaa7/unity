@@ -255,7 +255,6 @@ namespace StarterAssets
         {
             if (!HasBehavior(EPlayerBehavior.Move))
             {
-                _input.move = Vector2.zero;
                 return;
             }
             // set target speed based on move speed, sprint speed and if sprint is pressed
