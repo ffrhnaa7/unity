@@ -10,7 +10,7 @@ public class BossTrigger : MonoBehaviour
         if(other.CompareTag("Player"))
         {
             bossPrefab.SetActive(true);
-            bossAnim.SetTrigger("isTrigger");
+            bossAnim.SetTrigger("Trigger");
             Debug.Log("Boss Appear");
         }
     }

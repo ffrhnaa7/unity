@@ -1445,6 +1445,34 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: afbecd5bd7bdf5645939b6778b81260a, type: 3}
   m_PrefabInstance: {fileID: 1455466300}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1714657760 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1980343634766938, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+  m_PrefabInstance: {fileID: 1743488269}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &1714657763
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714657760}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3.540673
+  m_Height: 1.8285055
+  m_Direction: 1
+  m_Center: {x: 1.4391209, y: 4.968527, z: -3.2379043}
 --- !u!1001 &1743488269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1521,6 +1549,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 825bf30167a261449b503daf577cab5c, type: 2}
+    - target: {fileID: 4495458169122304060, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+      propertyPath: bossAI
+      value: 
+      objectReference: {fileID: 1743488272}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1534,6 +1566,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1230210909427796, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1743488275}
+    - targetCorrespondingSourceObject: {fileID: 1980343634766938, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1714657763}
   m_SourcePrefab: {fileID: 100100000, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
 --- !u!95 &1743488270 stripped
 Animator:
@@ -1555,7 +1590,11 @@ MonoBehaviour:
   player: {fileID: 501878578}
   animator: {fileID: 1743488270}
   agent: {fileID: 1743488273}
-  attackRange: 2
+  attackDetectCube: {fileID: 1829316048}
+  bossHp: 100
+  attackRange: 3.7
+  attackCooldown: 2
+  attackDamage: 10
 --- !u!195 &1743488273
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1605,6 +1644,11 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &1829316048 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7648757893807346426, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+  m_PrefabInstance: {fileID: 1743488269}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
