@@ -9218,7 +9218,7 @@ GameObject:
   - component: {fileID: 198836289606883568}
   - component: {fileID: 199396858846593778}
   m_Layer: 0
-  m_Name: Flame_CATRigHub005
+  m_Name: FiringPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9249,7 +9249,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1864889056587798}
   serializedVersion: 8
-  lengthInSec: 10
+  lengthInSec: 5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 1
