@@ -405,7 +405,7 @@ PlayerSettings:
   - serializedVersion: 3
     m_BuildTarget: Android
     m_Formats: 03000000
->>>>>>> team/main
+
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1
@@ -780,7 +780,7 @@ PlayerSettings:
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-<<<<<<< HEAD
+
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 4bac6e83-3372-4da2-b377-e0ef30c066d6
