@@ -3477,8 +3477,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5591106952868082154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
-=======
 --- !u!1 &1077068875779511758
 GameObject:
   m_ObjectHideFlags: 0
@@ -3627,7 +3625,6 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
->>>>>>> team/main
 --- !u!1 &1219663823031066774
 GameObject:
   m_ObjectHideFlags: 0
@@ -4694,11 +4691,8 @@ Transform:
   - {fileID: 1083661859381267368}
   - {fileID: 8015125552123303752}
   - {fileID: 7839480272408942235}
-<<<<<<< HEAD
-=======
   - {fileID: 7035237270577039081}
   - {fileID: 374945823409418641}
->>>>>>> team/main
   m_Father: {fileID: 2180674203291851060}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4523941682027016632
@@ -4848,11 +4842,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-<<<<<<< HEAD
-  m_ApplyRootMotion: 0
-=======
   m_ApplyRootMotion: 1
->>>>>>> team/main
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -4879,21 +4869,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-<<<<<<< HEAD
-  m_Height: 1.88
-=======
   m_Height: 1.5
->>>>>>> team/main
   m_Radius: 0.32
   m_SlopeLimit: 45
   m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-<<<<<<< HEAD
-  m_Center: {x: 0, y: 0.9, z: 0}
-=======
   m_Center: {x: 0, y: 0.8, z: 0}
->>>>>>> team/main
 --- !u!114 &4794588192406108915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4983,8 +4965,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 980e881e-182c-404c-8cbf-3d09fdb48fef
     m_ActionName: 'Player/Sprint[/Keyboard/leftShift]'
-<<<<<<< HEAD
-=======
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4656397825327766288}
@@ -5001,7 +4981,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: fc4df42b-6d1d-48e8-b5aa-10a1fdaba899
     m_ActionName: 'Player/Attack[/Mouse/leftButton]'
->>>>>>> team/main
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -5023,10 +5002,7 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
-<<<<<<< HEAD
-=======
   attack: 0
->>>>>>> team/main
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -5042,15 +5018,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26e54e5a728a9234ab24fcf1460ed8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-<<<<<<< HEAD
-  MoveSpeed: 2
-  SprintSpeed: 5.335
-=======
   WeaponObject: {fileID: 1044768670353845035}
   MaxHP: 100
   MoveSpeed: 20
   SprintSpeed: 53.35
->>>>>>> team/main
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
@@ -5065,11 +5036,7 @@ MonoBehaviour:
   GroundedRadius: 0.28
   GroundLayers:
     serializedVersion: 2
-<<<<<<< HEAD
-    m_Bits: 129
-=======
     m_Bits: 128
->>>>>>> team/main
   CinemachineCameraTarget: {fileID: 8457279162245803540}
   TopClamp: 70
   BottomClamp: -30
@@ -6548,8 +6515,6 @@ Transform:
   - {fileID: 7839519715490867237}
   m_Father: {fileID: 1515402130024953173}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
-=======
 --- !u!1001 &197782625923421818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6742,4 +6707,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: afbecd5bd7bdf5645939b6778b81260a, type: 3}
   m_PrefabInstance: {fileID: 7361299035391009026}
   m_PrefabAsset: {fileID: 0}
->>>>>>> team/main

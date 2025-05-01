@@ -80,24 +80,35 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualTouchZone.cs" />
     <Compile Include="Assets\JSG\Scripts\AnimatorDebugger.cs" />
     <Compile Include="Assets\GoblinAI.cs" />
+    <Compile Include="Assets\ResetTrigger.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualJoystick.cs" />
+    <Compile Include="Assets\SG_TestEnemy.cs" />
+    <Compile Include="Assets\SHD\Scripts\BossTrigger.cs" />
     <Compile Include="Assets\JSG\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\DoubleL\Demo\DemoCameraController.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\FC_GoblinRanger\Weapon\OM_Sword\R1\GoblinWeapon.cs" />
+    <Compile Include="Assets\JSG\Scripts\AttackReset.cs" />
     <Compile Include="Assets\FC_GoblinRanger\R1\EnemyMovement.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Commons\Scripts\IEnemy.cs" />
+    <Compile Include="Assets\SHD\Scripts\BossAI.cs" />
     <Compile Include="Assets\JSG\Scripts\WeaponController.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
+    <Compile Include="Assets\SHD\Scripts\BossEmergence.cs" />
+    <Compile Include="Assets\BehaviorTimeOut.cs" />
+    <Compile Include="Assets\SHD\Scripts\DetectingPlayer.cs" />
     <Compile Include="Assets\StarterAssets\ThirdPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Maze\Third-Party Notices.txt" />
+    <None Include="Assets\Parazite_Alfa\Animations\Animations\Animations_list.txt" />
     <None Include="Assets\Fantasy knight\Standard_Two_Sided.shader" />
     <None Include="Assets\StarterAssets\license.txt" />
     <None Include="Assets\ProjectSettings\ProjectVersion.txt" />
+    <None Include="Assets\Parazite_Alfa\Animations\Animations_with_stand\Animation list.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

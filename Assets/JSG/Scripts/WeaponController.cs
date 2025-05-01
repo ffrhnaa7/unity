@@ -1,24 +1,8 @@
-<<<<<<< HEAD
-=======
 using System.Collections;
->>>>>>> team/main
 using UnityEngine;
 
 public class WeaponController : MonoBehaviour
 {
-<<<<<<< HEAD
-    public GameObject _weapon;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        if (_weapon == null) Debug.LogError("_weapon is null");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-=======
     public GameObject Player;
     public TrailRenderer Trail;
     private CapsuleCollider _meleeArea;
@@ -34,14 +18,10 @@ public class WeaponController : MonoBehaviour
         Debug.Log($"{Trail}");
         Trail.enabled = false;
         _meleeArea.enabled = false;
->>>>>>> team/main
     }
 
     public void ActiveWeapon(bool active)
     {
-<<<<<<< HEAD
-        _weapon.SetActive(active);
-=======
         gameObject.SetActive(active);
     }
 
@@ -78,6 +58,5 @@ public class WeaponController : MonoBehaviour
         {
             Enemy.GetDamage(_damage);
         }
->>>>>>> team/main
     }
 }

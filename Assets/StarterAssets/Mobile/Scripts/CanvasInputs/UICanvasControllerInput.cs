@@ -20,11 +20,7 @@ namespace StarterAssets
 
         public void VirtualJumpInput(bool virtualJumpState)
         {
-<<<<<<< HEAD
-            starterAssetsInputs.JumpInput(virtualJumpState);
-=======
             starterAssetsInputs.DodgeInput(virtualJumpState);
->>>>>>> team/main
         }
 
         public void VirtualSprintInput(bool virtualSprintState)

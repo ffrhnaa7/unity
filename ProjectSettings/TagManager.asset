@@ -5,10 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - CinemachineTarget
-<<<<<<< HEAD
   - Enemy
-=======
->>>>>>> team/main
   layers:
   - Default
   - TransparentFX
@@ -17,11 +14,9 @@ TagManager:
   - Water
   - UI
   - Player
-<<<<<<< HEAD
   - Obstacles
-=======
   - Ground
->>>>>>> team/main
+
   - 
   - 
   - 
