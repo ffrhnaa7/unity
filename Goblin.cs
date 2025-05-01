@@ -119,27 +119,18 @@ public class GoblinAI : MonoBehaviour, IEnemy
     }
 
     private void Attack()
-{
-    navMeshAgent.isStopped = true;
-    m_Animator.SetBool("IsAttacking", true);
-
-    // Face the player
-    Vector3 direction = (player.position - transform.position).normalized;
-    if (direction != Vector3.zero)
     {
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-    }
+        navMeshAgent.isStopped = true;
+        m_Animator.SetBool("IsAttacking", true);
 
-    float distance = Vector3.Distance(transform.position, player.position);
-    if (distance > attackRange)
-    {
-        m_Animator.SetBool("IsAttacking", false);
-        navMeshAgent.isStopped = false;
-        ChangeState(GoblinState.Chase);
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (distance > attackRange)
+        {
+            m_Animator.SetBool("IsAttacking", false);
+            navMeshAgent.isStopped = false;
+            ChangeState(GoblinState.Chase);
+        }
     }
-}
-
 
     private bool CanSeePlayer()
     {
