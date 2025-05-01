@@ -10,7 +10,11 @@ namespace StarterAssets
 		[Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
+<<<<<<< HEAD
 		public bool jump;
+=======
+		public bool dodge;
+>>>>>>> team/main
 		public bool sprint;
 		public bool attack;
 
@@ -34,9 +38,15 @@ namespace StarterAssets
 			}
 		}
 
+<<<<<<< HEAD
 		public void OnJump(InputAction.CallbackContext context)
 		{
 			JumpInput(context.performed);
+=======
+		public void OnDodge(InputAction.CallbackContext context)
+		{
+			DodgeInput(context.performed);
+>>>>>>> team/main
         }
 
 		public void OnSprint(InputAction.CallbackContext context)
@@ -69,9 +79,15 @@ namespace StarterAssets
 			look = newLookDirection;
 		}
 
+<<<<<<< HEAD
 		public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
+=======
+		public void DodgeInput(bool newDodgeState)
+		{
+			dodge = newDodgeState;
+>>>>>>> team/main
 		}
 
 		public void SprintInput(bool newSprintState)

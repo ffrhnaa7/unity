@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 995ac1e004b466f47bb55bcbb50b3504
+timeCreated: 1513192971
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107131
+  packageName: Character Parazite Alfa
+  packageVersion: 1.0
+  assetPath: Assets/Parazite_Alfa/Animations/Animations_with_stand/Materials/Parazite_Alfa_Albedo.mat
+  uploadId: 218315
