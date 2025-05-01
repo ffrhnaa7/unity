@@ -24,11 +24,13 @@ public class GoblinWeaponHandler : MonoBehaviour
         {
             // Instantiate the sword and parent it to the hand
        
+           swordInstance = Instantiate(swordPrefab, transform);
+
+            // Then set position/rotation
             swordInstance.transform.localPosition = Vector3.zero;
             swordInstance.transform.localRotation = Quaternion.identity;
-       
 
-            // If you want to deactivate it on start
+            // Activate or deactivate
             swordInstance.SetActive(active);
         }
         else
