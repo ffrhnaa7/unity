@@ -13,6 +13,9 @@ public class BossAI : MonoBehaviour, IEnemy
     public GameObject attackDetectCube;
     private Collider attackCollider;
 
+    public GameObject fireAttackDetectCube;
+    private Collider fireAttackCollider;
+
     public float bossHp = 100;
 
     // Attackng 변수
@@ -23,7 +26,7 @@ public class BossAI : MonoBehaviour, IEnemy
     // Firing 변수
     public GameObject firePrefab;
     public Transform fireSpawnPoint;
-    public float firingCooldown = 5.23f;
+    public float firingCooldown = 5.8f;
 
     private bool isAttacking = false;
     private bool isActive = false;
@@ -34,8 +37,11 @@ public class BossAI : MonoBehaviour, IEnemy
         // 공격 감지 콜라이더를 처음에는 false로 설정
         if (attackDetectCube != null)
         {
-            attackCollider = attackDetectCube.GetComponent<Collider>();
+            attackCollider = attackDetectCube.GetComponent<BoxCollider>();
             attackCollider.enabled = false;
+
+            fireAttackCollider = fireAttackDetectCube.GetComponent<BoxCollider>();
+            fireAttackCollider.enabled = false;
         }
     }
 
@@ -49,7 +55,7 @@ public class BossAI : MonoBehaviour, IEnemy
         if (!isAttacking)
         {
             if (distance <= attackRange)
-                StartCoroutine(FiringPlayer());
+                TryAttack();
             else
                 ChasePlayer();
         }
@@ -118,7 +124,7 @@ public class BossAI : MonoBehaviour, IEnemy
         animator.SetTrigger("Firing");
         SpawnFire();
 
-        yield return new WaitForSeconds(firingCooldown);
+        yield return new WaitForSeconds(firingCooldown + 0.5f); // 애니메이션과 프리펩 동기화
 
         isAttacking = false;
     }
@@ -127,19 +133,21 @@ public class BossAI : MonoBehaviour, IEnemy
     public void SpawnFire()
     {
         GameObject fireInstance = Instantiate(firePrefab, fireSpawnPoint.position, fireSpawnPoint.rotation, fireSpawnPoint);
-        Destroy(fireInstance, 8f);
+        Destroy(fireInstance, firingCooldown + 0.5f); // 애니메이션과 프리펩 동기화
     }
 
     void TryAttack()
     {
         if (isAttacking) return;
 
-        int randomAttack = UnityEngine.Random.Range(0, 2);
+        int randomAttack = UnityEngine.Random.Range(0, 3);
 
         if (randomAttack == 0)
             StartCoroutine(AttackPlayer_1());
-        else
+        else if (randomAttack == 1)
             StartCoroutine(AttackPlayer_2());
+        else
+            StartCoroutine(FiringPlayer());
     }
 
     // Chasing 함수
@@ -178,6 +186,26 @@ public class BossAI : MonoBehaviour, IEnemy
         {
             attackCollider.enabled = false;
             Debug.Log("Disable AttackCollider!");
+        }
+    }
+    
+    // 불 공격 감지 콜라이더 활성화
+    public void EnableFireAttackCollider()
+    {
+        if (fireAttackCollider != null)
+        {
+            fireAttackCollider.enabled = true;
+            Debug.Log("Enable fireAttackCollider!");
+        }
+    }
+
+    // 불 공격 감지 콜라이더 비활성화
+    public void DisableFireAttackCollider()
+    {
+        if (fireAttackCollider != null)
+        {
+            fireAttackCollider.enabled = false;
+            Debug.Log("Disable fireAttackCollider!");
         }
     }
 
