@@ -1140,7 +1140,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 48da4bc0b710f7f4686b67efe262a857, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1455,6 +1455,11 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 95397136080106974, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
   m_PrefabInstance: {fileID: 1743488269}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1743488271 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4079600822358416, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+  m_PrefabInstance: {fileID: 1743488269}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1743488272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1471,10 +1476,14 @@ MonoBehaviour:
   animator: {fileID: 1743488270}
   agent: {fileID: 1743488273}
   attackDetectCube: {fileID: 1829316048}
+  fireAttackDetectCube: {fileID: 1743488274}
   bossHp: 100
   attackRange: 3.7
   attackCooldown: 2
   attackDamage: 10
+  firePrefab: {fileID: 1864889056587798, guid: 34a2b0923684eec4f994a698fe179ab1, type: 3}
+  fireSpawnPoint: {fileID: 1743488271}
+  firingCooldown: 5.23
 --- !u!195 &1743488273
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1497,6 +1506,11 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!1 &1743488274 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4586300352397078852, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+  m_PrefabInstance: {fileID: 1743488269}
+  m_PrefabAsset: {fileID: 0}
 --- !u!54 &1743488275
 Rigidbody:
   m_ObjectHideFlags: 0
