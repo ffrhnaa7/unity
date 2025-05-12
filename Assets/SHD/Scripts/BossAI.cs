@@ -28,6 +28,15 @@ public class BossAI : MonoBehaviour, IEnemy
     public Transform fireSpawnPoint;
     public float firingCooldown = 5.8f;
 
+    // Sound 변수
+    public AudioSource audioSource;
+    public AudioClip emergenceSound;
+    public AudioClip attack_1Sound;
+    public AudioClip attack_2Sound;
+    public AudioClip fireAttackSound;
+    public AudioClip footSoundLeft;
+    public AudioClip footSoundRight;
+
     private bool isAttacking = false;
     private bool isActive = false;
 
@@ -43,6 +52,8 @@ public class BossAI : MonoBehaviour, IEnemy
             fireAttackCollider = fireAttackDetectCube.GetComponent<BoxCollider>();
             fireAttackCollider.enabled = false;
         }
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -74,10 +85,17 @@ public class BossAI : MonoBehaviour, IEnemy
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            transform.rotation = targetRotation;
         }
 
         animator.SetTrigger("Attacking_1");
+
+        audioSource.clip = attack_1Sound;
+        audioSource.pitch = 1.2f;
+        audioSource.time = 0f;
+        audioSource.Play();
+        //Invoke("StopSound", 1.2f);
+
         yield return new WaitForSeconds(attackCooldown);
 
         isAttacking = false;
@@ -96,10 +114,17 @@ public class BossAI : MonoBehaviour, IEnemy
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            transform.rotation = targetRotation;
         }
 
         animator.SetTrigger("Attacking_2");
+
+        audioSource.clip = attack_2Sound;
+        audioSource.pitch = 1.25f;
+        audioSource.time = 0f;
+        audioSource.Play();
+        //Invoke("StopSound", 1.0f);
+        
         yield return new WaitForSeconds(attackCooldown);
 
         isAttacking = false;
@@ -118,13 +143,17 @@ public class BossAI : MonoBehaviour, IEnemy
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            transform.rotation = targetRotation;
         }
 
         animator.SetTrigger("Firing");
         SpawnFire();
 
+        Invoke("FireSound", 0.5f);
+
         yield return new WaitForSeconds(firingCooldown + 0.5f); // 애니메이션과 프리펩 동기화
+
+        audioSource.Stop();
 
         isAttacking = false;
     }
@@ -167,6 +196,24 @@ public class BossAI : MonoBehaviour, IEnemy
         }
 
         animator.SetBool("isChasing", true);
+    }
+
+    private void FireSound()
+    {
+        audioSource.clip = fireAttackSound;
+        audioSource.pitch = 1.0f;
+        audioSource.time = 2.3f;
+        audioSource.Play();
+    }
+
+    public void FootStepLeftSound()
+    {
+        audioSource.PlayOneShot(footSoundLeft);
+    }
+
+    public void FootStepRightSound()
+    {
+        audioSource.PlayOneShot(footSoundRight);
     }
 
     // 공격 감지 콜라이더 활성화
