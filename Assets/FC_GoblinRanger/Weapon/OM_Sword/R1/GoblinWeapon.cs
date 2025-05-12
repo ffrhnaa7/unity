@@ -2,40 +2,34 @@ using UnityEngine;
 
 public class GoblinWeaponHandler : MonoBehaviour
 {
-    [SerializeField] private GameObject swordPrefab; // Drag OM_Sword_R1 prefab here
+    [SerializeField] private GameObject swordPrefab;      // Drag OM_Sword_R1 prefab here
+    [SerializeField] private Transform handTransform;      // Assign BN_RightHand in Inspector
 
     private GameObject swordInstance;
 
     void Start()
     {
-        EquipWeapon(true);
+        WeaponEnable(true);  // Enable sword on start (optional)
     }
 
-    public void EquipWeapon(bool active)
+    public void WeaponEnable(bool active)
     {
         if (swordInstance != null)
         {
-            // If the sword already exists, just toggle its visibility
             swordInstance.SetActive(active);
             return;
         }
 
-        if (swordPrefab != null)
+        if (swordPrefab != null && handTransform != null)
         {
-            // Instantiate the sword and parent it to the hand
-       
-           swordInstance = Instantiate(swordPrefab, transform);
-
-            // Then set position/rotation
-            swordInstance.transform.localPosition = Vector3.zero;
-            swordInstance.transform.localRotation = Quaternion.identity;
-
-            // Activate or deactivate
+            swordInstance = Instantiate(swordPrefab, handTransform);
             swordInstance.SetActive(active);
         }
         else
         {
-            Debug.LogWarning("GoblinWeaponHandler: Missing prefab or hand transform!");
+            Debug.LogWarning("GoblinWeaponHandler: Missing swordPrefab or handTransform!");
         }
     }
+
+
 }
