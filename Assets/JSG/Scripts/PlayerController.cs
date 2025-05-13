@@ -189,8 +189,6 @@ namespace StarterAssets
             // 
             _hp = MaxHP;
             _behavior |= uint.MaxValue;
-
-            Debug.Log($"{_input.dodge}");
         }
 
         private void Update()
@@ -532,7 +530,6 @@ namespace StarterAssets
         }
         public void EnableBehaviorByString(string Behavior)
         {
-            Debug.Log($"EnableBehaviorByString, Behavior: {Behavior}");
             _behavior |= _behaviorMap[Behavior];
         }
         public void DisableBehavior(EPlayerBehavior Behavior)

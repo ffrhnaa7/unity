@@ -15,7 +15,6 @@ public class WeaponController : MonoBehaviour
         if (Player == null) Debug.LogError("Player is null");
 
         _meleeArea = GetComponent<CapsuleCollider>();
-        Debug.Log($"{Trail}");
         Trail.enabled = false;
         _meleeArea.enabled = false;
     }
