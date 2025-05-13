@@ -27,23 +27,23 @@ public class WeaponController : MonoBehaviour
 
     public void Use(float Time = 0.25f)
     {
-        Debug.Log("Use");
-        _dalayTime = Time;
+        //Debug.Log("Use");
+        //_dalayTime = Time;
 
-        StopCoroutine("Swing");
-        StartCoroutine("Swing");
+        //StopCoroutine("Swing");
+        //StartCoroutine("Swing");
     }
 
     IEnumerator Swing()
     {
-        yield return new WaitForSeconds(0.25f);
-        Trail.enabled = true;
-        _meleeArea.enabled = true;
-        Debug.Log("Swing, before WaitForSeconds");
+        //yield return new WaitForSeconds(0.25f);
+        //Trail.enabled = true;
+        //_meleeArea.enabled = true;
+        //Debug.Log("Swing, before WaitForSeconds");
         yield return new WaitForSeconds(_dalayTime);
-        Debug.Log("Swing, After WaitForSeconds");
-        Trail.enabled = false;
-        _meleeArea.enabled = false;
+        //Debug.Log("Swing, After WaitForSeconds");
+        //Trail.enabled = false;
+        //_meleeArea.enabled = false;
     }
 
     public void WeaponEnable(bool Enable)

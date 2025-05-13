@@ -98,7 +98,6 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
-        private bool _armed = true;
         private bool _dodging = false;
         private float _hp = 0.0f;
         private int _attackCount = 0;
@@ -110,6 +109,13 @@ namespace StarterAssets
             Damaged = 0b_0000_0100,
             Attack  = 0b_0000_1000,
         }
+        private Dictionary<string, uint> _behaviorMap = new Dictionary<string, uint>()
+        {
+            { "Move",   (uint)EPlayerBehavior.Move },
+            { "Dodge",   (uint)EPlayerBehavior.Dodge },
+            { "Damaged",    (uint)EPlayerBehavior.Damaged },
+            { "Attack", (uint)EPlayerBehavior.Attack }
+        };
         private uint _behavior;
 
         // timeout deltatime
@@ -124,7 +130,7 @@ namespace StarterAssets
         private int _animIDMotionSpeed;
         private int _animIDAttackTrigger;
         private int _animIDAttackCount;
-        private int _animIDDodge;
+        private int _animIDDodgeTrigger;
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
@@ -212,7 +218,7 @@ namespace StarterAssets
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             _animIDAttackTrigger = Animator.StringToHash("AttackTrigger");
             _animIDAttackCount = Animator.StringToHash("AttackCount");
-            _animIDDodge = Animator.StringToHash("Dodge");
+            _animIDDodgeTrigger = Animator.StringToHash("Dodge");
         }
 
         private void GroundedCheck()
@@ -259,13 +265,7 @@ namespace StarterAssets
             }
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-            if (_armed == true && _input.sprint == true)
-            {
-                //_armed = false;
-                //_weapon.ActiveWeapon(false);
-                //_input.attack = false;
-                //Debug.Log("달리기 위해 납도");
-            }
+
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
@@ -312,6 +312,7 @@ namespace StarterAssets
 
                 // rotate to face input direction relative to camera position
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
             }
 
 
@@ -335,11 +336,30 @@ namespace StarterAssets
             {
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
-                    Debug.Log("Dodge!");
+
+                    Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+                    if (_input.move != Vector2.zero)
+                    {
+                        _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                          _mainCamera.transform.eulerAngles.y;
+                        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                            RotationSmoothTime);
+
+                        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                    }
+
+                    Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                    transform.rotation = Quaternion.LookRotation(targetDirection);
+
                     _dodging = true;
-                    _animator.SetTrigger(_animIDDodge);
+
+                    ResetAllAnimationTrigger();
+                    _animator.SetTrigger(_animIDDodgeTrigger);
                     DisableBehavior(EPlayerBehavior.Move);
                     _dodgeTimeoutDelta = dodgeTimeout;
+
+
                 }
                 else
                 {
@@ -483,7 +503,12 @@ namespace StarterAssets
             }
         }
 
+        private void ResetAllAnimationTrigger()
+        {
+            _animator.ResetTrigger(_animIDAttackTrigger);
+            _animator.ResetTrigger(_animIDDodgeTrigger);
 
+        }
         // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
@@ -504,6 +529,11 @@ namespace StarterAssets
         public void EnableBehavior(EPlayerBehavior Behavior)
         {
             _behavior |= (uint)Behavior;
+        }
+        public void EnableBehaviorByString(string Behavior)
+        {
+            Debug.Log($"EnableBehaviorByString, Behavior: {Behavior}");
+            _behavior |= _behaviorMap[Behavior];
         }
         public void DisableBehavior(EPlayerBehavior Behavior)
         {
