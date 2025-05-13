@@ -8,16 +8,15 @@ public class BossAI : MonoBehaviour
     public Transform player;
     public Animator animator;
     public NavMeshAgent agent;
+    public float bossHp = 100;
+    private bool isAttacking = false;
+    private bool isActive = false;
 
-    // PlayerDamaged 변수
+    // DamageToPlayer 변수
     public GameObject attackDetectCube;
     private Collider attackCollider;
-
     public GameObject fireAttackDetectCube;
     private Collider fireAttackCollider;
-    private GameObject fireInstance;
-
-    public float bossHp = 100;
 
     // Attackng 변수
     public float attackRange = 4.3f;
@@ -28,19 +27,10 @@ public class BossAI : MonoBehaviour
     public GameObject firePrefab;
     public Transform fireSpawnPoint;
     public float firingCooldown = 5.8f;
+    private GameObject fireInstance;
 
-    // Sound 변수
-    public AudioSource audioSource;
-    public AudioClip emergenceSound;
-    public AudioClip attack_1Sound;
-    public AudioClip attack_2Sound;
-    public AudioClip fireAttackSound;
-    public AudioClip footSoundLeft;
-    public AudioClip footSoundRight;
-    public AudioClip deathSound;
-
-    private bool isAttacking = false;
-    private bool isActive = false;
+    // 사운드 컨트롤러 변수
+    public SoundController soundController;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -54,17 +44,18 @@ public class BossAI : MonoBehaviour
             fireAttackCollider = fireAttackDetectCube.GetComponent<BoxCollider>();
             fireAttackCollider.enabled = false;
         }
-
-        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isActive) return; // 등장 애니메이션이 끝날때까지 대기
+        // 등장 애니메이션이 끝날때까지 대기
+        if (!isActive) return;
 
+        // 플레이어와의 거리 계산
         float distance = Vector3.Distance(transform.position, player.position);
 
+        // 공격중이 아니면서 거리가 공격범위 안이면 공격하고 밖이면 추적
         if (!isAttacking)
         {
             if (distance <= attackRange)
@@ -72,10 +63,32 @@ public class BossAI : MonoBehaviour
             else
                 ChasePlayer();
         }
+
+        // 보스가 죽는지 계속 확인
         BossDeath();
     }
 
-    // Attacking 함수
+    // Chasing 함수
+    void ChasePlayer()
+    {
+        agent.isStopped = false;
+        agent.SetDestination(player.position);
+
+        // 플레이어 방향을 바라보는 코드 (자연스럽게)
+        Vector3 direction = (player.position - transform.position).normalized;
+        direction.y = 0f; // Y축 회전 방지
+
+        if (direction != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+
+        // Chasing 애니메이션 재생
+        animator.SetBool("isChasing", true);
+    }
+
+    // Attacking 코루틴 함수
     IEnumerator AttackPlayer_1()
     {
         isAttacking = true;
@@ -91,20 +104,20 @@ public class BossAI : MonoBehaviour
             transform.rotation = targetRotation;
         }
 
+        // Attacking_1 애니메이션 재생
         animator.SetTrigger("Attacking_1");
 
-        audioSource.clip = attack_1Sound;
-        audioSource.pitch = 1.2f;
-        audioSource.time = 0f;
-        audioSource.Play();
-        //Invoke("StopSound", 1.2f);
+        // Attacking_1 사운드 재생
+        soundController.AttackSound_1();
 
+        // 공격 쿨타임만큼 대기
         yield return new WaitForSeconds(attackCooldown);
 
+        // 공격 해제
         isAttacking = false;
     }
 
-    // Attacking 함수
+    // Attacking 코루틴 함수
     IEnumerator AttackPlayer_2()
     {
         isAttacking = true;
@@ -120,20 +133,20 @@ public class BossAI : MonoBehaviour
             transform.rotation = targetRotation;
         }
 
+        // Attacking_2 애니메이션 재생
         animator.SetTrigger("Attacking_2");
 
-        audioSource.clip = attack_2Sound;
-        audioSource.pitch = 1.25f;
-        audioSource.time = 0f;
-        audioSource.Play();
-        //Invoke("StopSound", 1.0f);
-        
+        // Attacking_2 사운드 재생
+        soundController.AttackSound_2();
+
+        // 공격 쿨타임만큼 대기
         yield return new WaitForSeconds(attackCooldown);
 
+        // 공격 해제
         isAttacking = false;
     }
 
-    // Firing 함수
+    // Firing 코루틴 함수
     IEnumerator FiringPlayer()
     {
         isAttacking = true;
@@ -149,25 +162,36 @@ public class BossAI : MonoBehaviour
             transform.rotation = targetRotation;
         }
 
+        // 불 공격 애니메이션 재생
         animator.SetTrigger("Firing");
+
+        // 불 프리팹 생성
         SpawnFire();
 
-        Invoke("FireSound", 0.5f);
+        // 불 공격 사운드 재생 (애니메이션과 사운드 동기화를 위한 Offset 설정)
+        soundController.FireAttackSoundDelay(0.5f);
 
-        yield return new WaitForSeconds(firingCooldown + 0.5f); // 애니메이션과 프리펩 동기화
+        // 불 공격 쿨타임만큼 대기 (애니메이션과 프리팹 동기화를 위한 Offset 설정)
+        yield return new WaitForSeconds(firingCooldown + 0.5f);
 
-        audioSource.Stop();
+        // 애니메이션이 끝나면 사운드 정지
+        soundController.audioSource.Stop();
 
+        // 공격 해제
         isAttacking = false;
     }
 
     // SpawnFire 함수
     public void SpawnFire()
     {
+        // 불 프리팹을 보스의 입 위치에서 생성
         fireInstance = Instantiate(firePrefab, fireSpawnPoint.position, fireSpawnPoint.rotation, fireSpawnPoint);
-        Destroy(fireInstance, firingCooldown + 0.5f); // 애니메이션과 프리펩 동기화
+
+        // 애니메이션이 끝나면 프리팹 파괴 (애니메이션과 프리팹 동기화를 위한 Offset 설정)
+        Destroy(fireInstance, firingCooldown + 0.5f);
     }
 
+    // 세 가지 공격을 랜덤으로 재생
     void TryAttack()
     {
         if (isAttacking) return;
@@ -182,64 +206,23 @@ public class BossAI : MonoBehaviour
             StartCoroutine(FiringPlayer());
     }
 
-    // Chasing 함수
-    void ChasePlayer()
-    {
-        agent.isStopped = false;
-        agent.SetDestination(player.position);
-
-        // 플레이어 방향을 바라보는 코드 (자연스럽게)
-        Vector3 direction = (player.position - transform.position).normalized;
-        direction.y = 0f;
-
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
-        }
-
-        animator.SetBool("isChasing", true);
-    }
-
+    // Death 함수
     void BossDeath()
     {
         if(bossHp <= 0)
         {
+            // Death 애니메이션 재생
             animator.SetTrigger("Death");
             agent.isStopped = true;
             isActive = false;
 
+            // 불 프리팹 파괴 및 10초 후 보스 오브젝트 파괴
             Destroy(fireInstance);
             Destroy(gameObject, 10.0f);
 
-            DeadSound();
+            // 죽는 사운드 재생
+            soundController.DeathSound();
         }
-    }
-
-    private void FireSound()
-    {
-        audioSource.clip = fireAttackSound;
-        audioSource.pitch = 1.0f;
-        audioSource.time = 2.3f;
-        audioSource.Play();
-    }
-
-    public void FootStepLeftSound()
-    {
-        audioSource.PlayOneShot(footSoundLeft);
-    }
-
-    public void FootStepRightSound()
-    {
-        audioSource.PlayOneShot(footSoundRight);
-    }
-
-    private void DeadSound()
-    {
-        audioSource.clip = deathSound;
-        audioSource.pitch = 0.85f;
-        audioSource.time = 0f;
-        audioSource.Play();
     }
 
     // 공격 감지 콜라이더 활성화
