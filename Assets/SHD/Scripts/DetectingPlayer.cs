@@ -8,6 +8,7 @@ public class DetectingPlayer : MonoBehaviour
         {
             Debug.Log("Damaged");
             // 플레이어 피 깎기
+
         }
     }
 }

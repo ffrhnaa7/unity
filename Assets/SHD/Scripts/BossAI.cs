@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BossAI : MonoBehaviour, IEnemy
+public class BossAI : MonoBehaviour
 {
     public Transform player;
     public Animator animator;
@@ -15,6 +15,7 @@ public class BossAI : MonoBehaviour, IEnemy
 
     public GameObject fireAttackDetectCube;
     private Collider fireAttackCollider;
+    private GameObject fireInstance;
 
     public float bossHp = 100;
 
@@ -36,6 +37,7 @@ public class BossAI : MonoBehaviour, IEnemy
     public AudioClip fireAttackSound;
     public AudioClip footSoundLeft;
     public AudioClip footSoundRight;
+    public AudioClip deathSound;
 
     private bool isAttacking = false;
     private bool isActive = false;
@@ -70,6 +72,7 @@ public class BossAI : MonoBehaviour, IEnemy
             else
                 ChasePlayer();
         }
+        BossDeath();
     }
 
     // Attacking 함수
@@ -161,7 +164,7 @@ public class BossAI : MonoBehaviour, IEnemy
     // SpawnFire 함수
     public void SpawnFire()
     {
-        GameObject fireInstance = Instantiate(firePrefab, fireSpawnPoint.position, fireSpawnPoint.rotation, fireSpawnPoint);
+        fireInstance = Instantiate(firePrefab, fireSpawnPoint.position, fireSpawnPoint.rotation, fireSpawnPoint);
         Destroy(fireInstance, firingCooldown + 0.5f); // 애니메이션과 프리펩 동기화
     }
 
@@ -198,6 +201,21 @@ public class BossAI : MonoBehaviour, IEnemy
         animator.SetBool("isChasing", true);
     }
 
+    void BossDeath()
+    {
+        if(bossHp <= 0)
+        {
+            animator.SetTrigger("Death");
+            agent.isStopped = true;
+            isActive = false;
+
+            Destroy(fireInstance);
+            Destroy(gameObject, 10.0f);
+
+            DeadSound();
+        }
+    }
+
     private void FireSound()
     {
         audioSource.clip = fireAttackSound;
@@ -214,6 +232,14 @@ public class BossAI : MonoBehaviour, IEnemy
     public void FootStepRightSound()
     {
         audioSource.PlayOneShot(footSoundRight);
+    }
+
+    private void DeadSound()
+    {
+        audioSource.clip = deathSound;
+        audioSource.pitch = 0.85f;
+        audioSource.time = 0f;
+        audioSource.Play();
     }
 
     // 공격 감지 콜라이더 활성화
@@ -254,12 +280,6 @@ public class BossAI : MonoBehaviour, IEnemy
             fireAttackCollider.enabled = false;
             Debug.Log("Disable fireAttackCollider!");
         }
-    }
-
-    // Damaged 함수 (인터페이스)
-    public void GetDamage(float damage)
-    {
-        bossHp -= damage;
     }
 
     // 보스 등장 애니메이션이 끝났을 때
