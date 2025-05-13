@@ -98,7 +98,6 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
-        private bool _armed = true;
         private bool _dodging = false;
         private float _hp = 0.0f;
         private int _attackCount = 0;
@@ -259,13 +258,7 @@ namespace StarterAssets
             }
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-            if (_armed == true && _input.sprint == true)
-            {
-                //_armed = false;
-                //_weapon.ActiveWeapon(false);
-                //_input.attack = false;
-                //Debug.Log("달리기 위해 납도");
-            }
+
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
@@ -312,6 +305,7 @@ namespace StarterAssets
 
                 // rotate to face input direction relative to camera position
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
             }
 
 
@@ -335,7 +329,28 @@ namespace StarterAssets
             {
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
-                    Debug.Log("Dodge!");
+
+                    Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+                    // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+                    // if there is a move input rotate player when the player is moving
+                    if (_input.move != Vector2.zero)
+                    {
+                        _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                          _mainCamera.transform.eulerAngles.y;
+                        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                            RotationSmoothTime);
+
+                        // rotate to face input direction relative to camera position
+                        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+                    }
+
+
+                    Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                    transform.rotation = Quaternion.LookRotation(targetDirection);
+
+
                     _dodging = true;
                     _animator.SetTrigger(_animIDDodge);
                     DisableBehavior(EPlayerBehavior.Move);
