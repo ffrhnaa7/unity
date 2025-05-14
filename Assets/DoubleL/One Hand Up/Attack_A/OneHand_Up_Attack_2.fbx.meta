@@ -42,7 +42,7 @@ ModelImporter:
       takeName: OneHand_Up_Attack_2
       internalID: 6799651534840860903
       firstFrame: 0
-      lastFrame: 80
+      lastFrame: 59
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -76,7 +76,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.56147075
+      - time: 0.7253363
         functionName: EnableBehaviorByString
         data: Dodge
         objectReferenceParameter: {instanceID: 0}
