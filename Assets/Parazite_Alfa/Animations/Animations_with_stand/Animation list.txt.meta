@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9ff7d228f36db204ab8f86fa9230b485
+timeCreated: 1513192970
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 107131
+  packageName: Character Parazite Alfa
+  packageVersion: 1.0
+  assetPath: Assets/Parazite_Alfa/Animations/Animations_with_stand/Animation list.txt
+  uploadId: 218315

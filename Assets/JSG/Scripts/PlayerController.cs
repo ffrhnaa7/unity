@@ -1,4 +1,6 @@
-﻿ using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -12,9 +14,11 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         [Header("Player")]
+
+        public GameObject WeaponObject;
 
         [Tooltip("Player's Max HP")]
         public float MaxHP = 100.0f;
@@ -24,6 +28,9 @@ namespace StarterAssets
 
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
+
+        [Tooltip("Dodge speed of the character in m/s")]
+        public float DodgeSpeed = 6f;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -45,7 +52,7 @@ namespace StarterAssets
 
         [Space(10)]
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-        public float JumpTimeout = 0.50f;
+        public float dodgeTimeout = 0.20f;
 
         [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
         public float FallTimeout = 0.15f;
@@ -85,16 +92,28 @@ namespace StarterAssets
 
         // player
         private float _speed;
+        private float _dodgeSpeed;
         private float _animationBlend;
         private float _targetRotation = 0.0f;
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
-        private bool _armed = false;
-        private float _hp;
+        private bool _armed = true;
+        private bool _dodging = false;
+        private float _hp = 0.0f;
+        private int _attackCount = 0;
+        [Flags]
+        public enum EPlayerBehavior : int
+        {
+            Move    = 0b_0000_0001,
+            Dodge   = 0b_0000_0010,
+            Damaged = 0b_0000_0100,
+            Attack  = 0b_0000_1000,
+        }
+        private uint _behavior;
 
         // timeout deltatime
-        private float _jumpTimeoutDelta;
+        private float _dodgeTimeoutDelta;
         private float _fallTimeoutDelta;
 
         // animation IDs
@@ -103,8 +122,10 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
-
-#if ENABLE_INPUT_SYSTEM 
+        private int _animIDAttackTrigger;
+        private int _animIDAttackCount;
+        private int _animIDDodge;
+#if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
         private Animator _animator;
@@ -142,11 +163,11 @@ namespace StarterAssets
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
-            _weapon = GetComponent<WeaponController>();
+            _weapon = WeaponObject.GetComponent<WeaponController>();
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -156,18 +177,22 @@ namespace StarterAssets
             AssignAnimationIDs();
 
             // reset our timeouts on start
-            _jumpTimeoutDelta = JumpTimeout;
+            _dodgeTimeoutDelta = dodgeTimeout;
             _fallTimeoutDelta = FallTimeout;
 
-            //
+            // 
             _hp = MaxHP;
+            _behavior |= uint.MaxValue;
+
+            Debug.Log($"{_input.dodge}");
         }
 
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            JumpAndGravity();
+            Dodge();
+            ApplyGravity();
             GroundedCheck();
             Move();
             Attack();
@@ -185,6 +210,9 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDAttackTrigger = Animator.StringToHash("AttackTrigger");
+            _animIDAttackCount = Animator.StringToHash("AttackCount");
+            _animIDDodge = Animator.StringToHash("Dodge");
         }
 
         private void GroundedCheck()
@@ -225,14 +253,18 @@ namespace StarterAssets
 
         private void Move()
         {
+            if (!HasBehavior(EPlayerBehavior.Move))
+            {
+                return;
+            }
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_armed == true && _input.sprint == true)
             {
-                _armed = false;
-                _weapon.ActiveWeapon(false);
-                _input.attack = false;
-                Debug.Log("달리기 위해 납도");
+                //_armed = false;
+                //_weapon.ActiveWeapon(false);
+                //_input.attack = false;
+                //Debug.Log("달리기 위해 납도");
             }
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -297,7 +329,41 @@ namespace StarterAssets
             }
         }
 
-        private void JumpAndGravity()
+        private void Dodge()
+        {
+            if (Grounded)
+            {
+                if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
+                {
+                    Debug.Log("Dodge!");
+                    _dodging = true;
+                    _animator.SetTrigger(_animIDDodge);
+                    DisableBehavior(EPlayerBehavior.Move);
+                    _dodgeTimeoutDelta = dodgeTimeout;
+                }
+                else
+                {
+                    _input.dodge = false;
+                }
+                // dodge timeout
+                if (_dodgeTimeoutDelta >= 0.0f)
+                {
+                    _dodgeTimeoutDelta -= Time.deltaTime;
+                    if (_dodgeTimeoutDelta <= 0.0f)
+                    {
+                        _dodging = false;
+                        EnableBehavior(EPlayerBehavior.Move);
+                    }
+                }
+            }
+
+            if (_dodging)
+            {
+                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime) +
+                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            }
+        }
+        private void ApplyGravity()
         {
             if (Grounded)
             {
@@ -317,8 +383,9 @@ namespace StarterAssets
                     _verticalVelocity = -2f;
                 }
 
+                
                 // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                /*if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -328,18 +395,12 @@ namespace StarterAssets
                     {
                         _animator.SetBool(_animIDJump, true);
                     }
-                }
+                }*/
 
-                // jump timeout
-                if (_jumpTimeoutDelta >= 0.0f)
-                {
-                    _jumpTimeoutDelta -= Time.deltaTime;
-                }
+                
             }
             else
             {
-                // reset the jump timeout timer
-                _jumpTimeoutDelta = JumpTimeout;
 
                 // fall timeout
                 if (_fallTimeoutDelta >= 0.0f)
@@ -356,7 +417,7 @@ namespace StarterAssets
                 }
 
                 // if we are not grounded, do not jump
-                _input.jump = false;
+                //_input.jump = false;
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -368,20 +429,16 @@ namespace StarterAssets
 
         private void Attack()
         {
-            if (_input.attack)
+            if (_input.attack && HasBehavior(EPlayerBehavior.Attack))
             {
-                if (_armed == false)
-                {
-                    Debug.Log("Attack!");
-                    _weapon.ActiveWeapon(true);
-                    _input.attack = false;
-                    _armed = true;
-                }
-                // 발도중엔 공격이 나가도록 구현
-                else
-                {
-
-                }
+                _animator.SetTrigger(_animIDAttackTrigger);
+                _animator.SetInteger(_animIDAttackCount, _attackCount);
+                //_attackCount++;
+                _input.attack = false;
+            }
+            else
+            {
+                _input.attack = false;
             }
         }
 
@@ -412,7 +469,7 @@ namespace StarterAssets
             {
                 if (FootstepAudioClips.Length > 0)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
+                    var index = UnityEngine.Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
                 }
             }
@@ -426,10 +483,40 @@ namespace StarterAssets
             }
         }
 
+
+        // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
             _hp = Mathf.Max(0, _hp - damage);
             return true;
+        }
+
+        public void OnAttackStart()
+        {
+            _weapon.WeaponEnable(true);
+        }
+        public void OnAttackEnd()
+        {
+            _weapon.WeaponEnable(false);
+            _controller.Move(Vector3.zero);
+        }
+
+        public void EnableBehavior(EPlayerBehavior Behavior)
+        {
+            _behavior |= (uint)Behavior;
+        }
+        public void DisableBehavior(EPlayerBehavior Behavior)
+        {
+            _behavior &= ~(uint)Behavior;
+        }
+        public bool HasBehavior(EPlayerBehavior Behavior)
+        {
+            return (_behavior & (uint)Behavior) != 0;
+        }
+
+        public void SetTimeOutDelta(string BehaviorName)
+        {
+            //static Dictionary<string, ref int>
         }
     }
 }
