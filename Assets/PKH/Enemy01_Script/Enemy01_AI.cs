@@ -1,120 +1,162 @@
-using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.AI;
+using UnityEngine;
 
-public class Enemy01_AI : MonoBehaviour
+// 1. Enemy 의 상태를 처리할 구조를 작성
+// 대기, 이동, 달리기, 공격
+public class Enemy01_AI : MonoBehaviour, IEnemy
 {
-    public enum State { Idle, Patrol, Chase, Attack, Return, Dead }
-    public State currentState = State.Idle;
+    enum EnemyState
+    {
+        Idle,
+        Walk,
+        Run,
+        Attack
+    };
 
-    [Header("Settings")]
-    public float sightRange = 10f;
-    public float attackRange = 2f;
-    public float returnRange = 15f;
-    public float walkSpeed = 1f;
-    public float runSpeed = 2f;
+    private EnemyState m_state;
 
-    private Transform player;
-    private NavMeshAgent agent;
-    private Animator anim;
-    private Vector3 originPosition;
+    private CharacterController cc;
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        agent = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
-        originPosition = transform.position;
+        m_state = EnemyState.Idle;
 
-        currentState = State.Idle;
+        cc = GetComponent<CharacterController>();
     }
 
     void Update()
     {
-        if (currentState == State.Dead) return;
-
-        float distance = Vector3.Distance(transform.position, player.position);
-
-        switch (currentState)
+        print("현재 상태 : " + m_state);
+        switch (m_state)
         {
-            case State.Idle:
+            case EnemyState.Idle:
                 Idle();
-                if (distance < sightRange) currentState = State.Chase;
                 break;
-
-            case State.Patrol:
-                Patrol();
-                if (distance < sightRange) currentState = State.Chase;
+            case EnemyState.Walk:
+                Walk();
                 break;
-
-            case State.Chase:
-                Chase();
-                if (distance < attackRange) currentState = State.Attack;
-                else if (distance > returnRange) currentState = State.Return;
+            case EnemyState.Run :
+                Run();
                 break;
-
-            case State.Attack:
+            case EnemyState.Attack:
                 Attack();
-                if (distance > attackRange) currentState = State.Chase;
-                break;
-
-            case State.Return:
-                Return();
-                if (Vector3.Distance(transform.position, originPosition) < 1f) currentState = State.Patrol;
                 break;
         }
     }
-
-    void Idle()
+    
+    // 필요 속성: 대기 시간, 경과 시간
+    public float idleDelayTime = 2;
+    private float currentTime = 0;
+    private void Idle()
     {
-        anim.SetBool("isWalking", false);
-        anim.SetBool("isRunning", false);
-        agent.SetDestination(transform.position);
+        // 일정 시간이 지나면 Idle → Walk로 전환
+        // 1. 시간이 흘렀으니
+        currentTime += Time.deltaTime;
+        // 2. 일정 시간이 됐으니까
+        if (currentTime > idleDelayTime)
+        {
+            // 3. 상태를 Walk 로 전환
+            m_state = EnemyState.Walk;
+            currentTime = 0;
+        }
+        
+    }
+    
+    // 필요속성 : 이동속도, 타겟
+    public float speed = 5;
+    public Transform target;
+    
+    // 필요 속성: 공격 범위
+    public float attackRange = 2;
+    private void Walk()
+    {
+        // 타겟 방향으로 이동하고 싶다.
+        // 1. 방향이 필요
+        Vector3 dir = target.position - transform.position;
+        float distance = dir.magnitude; // 거리를 구함
+    
+        // 공격 범위 안에 타겟이 들어오면 상태를 Attack 으로 전환
+        if (distance < attackRange)
+        {
+            m_state = EnemyState.Attack;
+            return;
+        }
+        dir.y = 0; // 너무 크면 쳐다볼 때, 하늘을 바라보는 오류 수정 코드
+        dir.Normalize();
+        // 2. 이동하고 싶다.
+        // P = P0 + vt
+        cc.SimpleMove(dir * speed);
+        
+        // 이동하는 방향으로 회전하고 싶다.
+        //transform.LookAt(target);
+        //transform.forward = dir; // 부드럽게 회전은 안된다.
+        // 부드럽게 회전하는 코드
+        //transform.forward = Vector3.Lerp(transform.forward, dir, 5 * Time.deltaTime); -> 회전 오류 발생
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10*Time.deltaTime);
     }
 
-    void Patrol()
+    // Visual Debugging 을 위한 함수
+    private void OnDrawGizmos()
     {
-        agent.speed = walkSpeed;
-        anim.SetBool("isWalking", true);
-        anim.SetBool("isRunning", false);
-        agent.SetDestination(originPosition); 
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 
-    void Chase()
+    private void Run()
     {
-        agent.speed = runSpeed;
-        anim.SetBool("isWalking", false);
-        anim.SetBool("isRunning", true); // ← 여기에 추가
-        agent.SetDestination(player.position);
+        throw new System.NotImplementedException();
+    }
+    
+    // 타겟이 공격 범위를 벗어나면 상태를 Walk로 상태 전환
+    
+    // 필요속성: 공격 대기 시간
+    public float attackDelayTime = 2;
+    private void Attack()
+    {
+        // 일정 시간에 한 번씩 공격하고 싶다.
+        currentTime += Time.deltaTime;
+        if (currentTime > attackDelayTime)
+        {
+            currentTime = 0;
+            print("공격!!!!!"); // MonoBehavior 덕분에 사용가능(로그 찍기)
+        }
+        
+        float distance = Vector3.Distance(transform.position, target.position);
+        if (distance > attackRange)
+        {
+            m_state = EnemyState.Walk;
+        }
+    }
+    public void GetDamage(float damage)
+    {
+
     }
 
-    void Attack()
+    private void Die()
     {
-        agent.SetDestination(transform.position);
-        transform.LookAt(player);
-        anim.SetTrigger("attack");
+        Destroy(gameObject, 2f); // goblin disapeears after 2 sec
     }
 
-    void Return()
+    // 피격 당했을 때 호출되는 함수
+    // hp 갖도록 하고싶다.
+    private int hp = 3;
+    // 만약 hp 가 0 이하면 죽이고
+    // 그렇지 않으면 상태를 Idle 로 전환하기
+    public void OnDamageProcess()
     {
-        agent.speed = walkSpeed;
-        anim.SetBool("isWalking", true);
-        anim.SetBool("isRunning", false);        
-        agent.SetDestination(originPosition);
+        hp--;
+        if (hp <= 0)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            m_state = EnemyState.GetDamage;
+            currentTime = 0;
+        }
+        
     }
 
-    public void TakeDamage(float damage)
-    {
-        currentState = State.Dead;
-        Die();
-    }
-
-    void Die()
-    {
-        anim.SetBool("isDead", true);
-        agent.enabled = false;
-        GetComponent<Collider>().enabled = false;
-        Destroy(gameObject, 5f);
-    }
 }
