@@ -4593,6 +4593,7 @@ Transform:
   - {fileID: 2029819306655299017}
   - {fileID: 5753120211479683510}
   - {fileID: 464901460458526745}
+  - {fileID: 5334432356851262146}
   m_Father: {fileID: 5878686153044179192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4395801476161182628
@@ -4842,7 +4843,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -4864,18 +4865,18 @@ CharacterController:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.5
+  m_Height: 1.73
   m_Radius: 0.32
   m_SlopeLimit: 45
   m_StepOffset: 0
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0.8, z: 0}
+  m_Center: {x: 0, y: 0.98, z: 0}
 --- !u!114 &4794588192406108915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4937,7 +4938,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4656397825327766288}
         m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
-        m_MethodName: OnJump
+        m_MethodName: OnDodge
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4981,6 +4982,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: fc4df42b-6d1d-48e8-b5aa-10a1fdaba899
     m_ActionName: 'Player/Attack[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4656397825327766288}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnGuard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 23dd86b4-1967-4965-a1d1-6ded5b430931
+    m_ActionName: 'Player/Guard[/Keyboard/q]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -5000,9 +5017,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   move: {x: 0, y: 0}
   look: {x: 0, y: 0}
-  jump: 0
+  dodge: 0
   sprint: 0
   attack: 0
+  guard: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -5020,8 +5038,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WeaponObject: {fileID: 1044768670353845035}
   MaxHP: 100
-  MoveSpeed: 20
-  SprintSpeed: 53.35
+  MoveSpeed: 2
+  SprintSpeed: 5.335
+  DodgeSpeed: 6
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
@@ -5029,10 +5048,10 @@ MonoBehaviour:
   FootstepAudioVolume: 0.5
   JumpHeight: 1.2
   Gravity: -15
-  JumpTimeout: 0.5
+  dodgeTimeout: 0.75
   FallTimeout: 0.15
   Grounded: 1
-  GroundedOffset: -0.14
+  GroundedOffset: -0.2
   GroundedRadius: 0.28
   GroundLayers:
     serializedVersion: 2
@@ -6515,6 +6534,68 @@ Transform:
   - {fileID: 7839519715490867237}
   m_Father: {fileID: 1515402130024953173}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &127130608837224694
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7259501687305951815}
+    m_Modifications:
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0053088553
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0565338
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.017976087
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.10674019
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.95401275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.19173592
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.2042147
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -7.201
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 205.722
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -204.374
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459520990854632980, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+      propertyPath: m_Name
+      value: Shield
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+--- !u!4 &5334432356851262146 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5459520990854400564, guid: 1fc692b249e14e048bc297a842723ef5, type: 3}
+  m_PrefabInstance: {fileID: 127130608837224694}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &197782625923421818
 PrefabInstance:
   m_ObjectHideFlags: 0

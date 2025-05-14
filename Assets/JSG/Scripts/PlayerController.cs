@@ -108,13 +108,15 @@ namespace StarterAssets
             Dodge   = 0b_0000_0010,
             Damaged = 0b_0000_0100,
             Attack  = 0b_0000_1000,
+            Guard   = 0b_0001_0000,
         }
         private Dictionary<string, uint> _behaviorMap = new Dictionary<string, uint>()
         {
             { "Move",   (uint)EPlayerBehavior.Move },
             { "Dodge",   (uint)EPlayerBehavior.Dodge },
             { "Damaged",    (uint)EPlayerBehavior.Damaged },
-            { "Attack", (uint)EPlayerBehavior.Attack }
+            { "Attack", (uint)EPlayerBehavior.Attack },
+            { "Guard", (uint)EPlayerBehavior.Guard }
         };
         private uint _behavior;
 
@@ -131,6 +133,8 @@ namespace StarterAssets
         private int _animIDAttackTrigger;
         private int _animIDAttackCount;
         private int _animIDDodgeTrigger;
+        private int _animIDGuard;
+
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
@@ -195,6 +199,7 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
+            Guard();
             Dodge();
             ApplyGravity();
             GroundedCheck();
@@ -209,14 +214,15 @@ namespace StarterAssets
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed = Animator.StringToHash("Speed");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-            _animIDAttackTrigger = Animator.StringToHash("AttackTrigger");
-            _animIDAttackCount = Animator.StringToHash("AttackCount");
+            _animIDSpeed        = Animator.StringToHash("Speed");
+            _animIDGrounded     = Animator.StringToHash("Grounded");
+            _animIDJump         = Animator.StringToHash("Jump");
+            _animIDFreeFall     = Animator.StringToHash("FreeFall");
+            _animIDMotionSpeed  = Animator.StringToHash("MotionSpeed");
+            _animIDAttackTrigger= Animator.StringToHash("AttackTrigger");
+            _animIDAttackCount  = Animator.StringToHash("AttackCount");
             _animIDDodgeTrigger = Animator.StringToHash("Dodge");
+            _animIDGuard        = Animator.StringToHash("Guard");
         }
 
         private void GroundedCheck()
@@ -328,6 +334,20 @@ namespace StarterAssets
             }
         }
 
+        private void Guard()
+        {
+            if (Grounded)
+            {
+                if (_input.guard && HasBehavior(EPlayerBehavior.Guard))
+                {
+                    _animator.SetBool(_animIDGuard, true);
+                }
+                else
+                {
+                    _animator.SetBool(_animIDGuard, false);
+                }
+            }
+        }
         private void Dodge()
         {
             if (Grounded)
@@ -544,6 +564,11 @@ namespace StarterAssets
         public void SetTimeOutDelta(string BehaviorName)
         {
             //static Dictionary<string, ref int>
+        }
+
+        public void AnimationEventLog(string Log)
+        {
+            Debug.Log($"{Log}");
         }
     }
 }
