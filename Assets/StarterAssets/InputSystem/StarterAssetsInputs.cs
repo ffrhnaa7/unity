@@ -1,6 +1,7 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 #endif
 
 namespace StarterAssets
@@ -14,6 +15,7 @@ namespace StarterAssets
 		public bool sprint;
 		public bool attack;
 		public bool guard;
+		public bool debug;
 
         [Header("Movement Settings")]
 		public bool analogMovement;
@@ -61,11 +63,10 @@ namespace StarterAssets
 		public void OnGuard(InputAction.CallbackContext context)
 		{
             GuardInput(context.performed);
-
-            if (context.performed)
-			{
-				//GuardInput(true);
-			}
+		}
+		public void OnDebug(InputAction.CallbackContext context)
+		{
+			DebugInput(context.performed);
 		}
 #endif
 
@@ -92,6 +93,11 @@ namespace StarterAssets
 		public void GuardInput(bool newGuardState)
 		{
 			guard = newGuardState;
+		}
+
+		public void DebugInput(bool newDebugState)
+		{
+			debug = newDebugState;
 		}
 
         private void OnApplicationFocus(bool hasFocus)

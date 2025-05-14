@@ -101,7 +101,7 @@ namespace StarterAssets
         private bool _dodging = false;
         private float _hp = 0.0f;
         private int _attackCount = 0;
-        [Flags]
+        [Flags, Serializable]
         public enum EPlayerBehavior : int
         {
             Move    = 0b_0000_0001,
@@ -134,6 +134,7 @@ namespace StarterAssets
         private int _animIDAttackCount;
         private int _animIDDodgeTrigger;
         private int _animIDGuard;
+        private int _animIDHitWeak;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -205,6 +206,7 @@ namespace StarterAssets
             GroundedCheck();
             Move();
             Attack();
+            DebugUpdate();
         }
 
         private void LateUpdate()
@@ -223,8 +225,26 @@ namespace StarterAssets
             _animIDAttackCount  = Animator.StringToHash("AttackCount");
             _animIDDodgeTrigger = Animator.StringToHash("Dodge");
             _animIDGuard        = Animator.StringToHash("Guard");
+            _animIDHitWeak      = Animator.StringToHash("HitWeak");
         }
 
+        private Quaternion GetFacingRotationFromInput()
+        {
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+            if (_input.move != Vector2.zero)
+            {
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                  _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                    RotationSmoothTime);
+
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            }
+
+            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            return Quaternion.LookRotation(targetDirection);
+        }
         private void GroundedCheck()
         {
             // set sphere position, with offset
@@ -340,11 +360,13 @@ namespace StarterAssets
             {
                 if (_input.guard && HasBehavior(EPlayerBehavior.Guard))
                 {
+                    transform.rotation = GetFacingRotationFromInput();
                     _animator.SetBool(_animIDGuard, true);
                 }
-                else
+                else if (_input.guard == false)
                 {
                     _animator.SetBool(_animIDGuard, false);
+
                 }
             }
         }
@@ -354,21 +376,7 @@ namespace StarterAssets
             {
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
-
-                    Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-                    if (_input.move != Vector2.zero)
-                    {
-                        _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                          _mainCamera.transform.eulerAngles.y;
-                        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                            RotationSmoothTime);
-
-                        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-                    }
-
-                    Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-                    transform.rotation = Quaternion.LookRotation(targetDirection);
+                    transform.rotation = GetFacingRotationFromInput();
 
                     _dodging = true;
 
@@ -527,10 +535,20 @@ namespace StarterAssets
             _animator.ResetTrigger(_animIDDodgeTrigger);
 
         }
+
+        private void DebugUpdate()
+        {
+            if (_input.debug)
+            {
+                GetDamage(.1f);
+                _input.debug = false;
+            }
+        }
         // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
             _hp = Mathf.Max(0, _hp - damage);
+            _animator.SetTrigger(_animIDHitWeak);
             return true;
         }
 
@@ -544,6 +562,10 @@ namespace StarterAssets
             _controller.Move(Vector3.zero);
         }
 
+        public void EnableBehavior(uint Flag)
+        {
+            _behavior |= (uint)Flag;
+        }
         public void EnableBehavior(EPlayerBehavior Behavior)
         {
             _behavior |= (uint)Behavior;
@@ -551,6 +573,10 @@ namespace StarterAssets
         public void EnableBehaviorByString(string Behavior)
         {
             _behavior |= _behaviorMap[Behavior];
+        }
+        public void DisableBehavior(uint Flag)
+        {
+            _behavior &= ~Flag;
         }
         public void DisableBehavior(EPlayerBehavior Behavior)
         {
@@ -570,5 +596,7 @@ namespace StarterAssets
         {
             Debug.Log($"{Log}");
         }
+
+        
     }
 }
