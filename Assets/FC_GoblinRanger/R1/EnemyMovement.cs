@@ -25,61 +25,59 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public float maxHp = 100f;
     public float attackDamage = 10f;
 
-    private float attackCooldown = 1.5f;
+    private float attackCooldown = 4f;
     private float nextAttackTime = 0f;
     private GoblinState currentState;
     private int currentWaypointIndex = 0;
     private Transform player;
     private float currentHp;
     private bool isDead = false;
+    private GoblinWeaponHandler weaponHandler;
+    [SerializeField] private ParticleSystem bloodEffect;
 
     private void Awake()
     {
         m_Animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
+        weaponHandler = GetComponent<GoblinWeaponHandler>();
         currentHp = maxHp;
+    }
 
+    private void Start()
+    {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
         if (player == null)
-            Debug.LogError("❌ GoblinAI: Player not found! Make sure the Player GameObject has the tag 'Player'");
+            Debug.LogError("❌ GoblinAI: Player not found! Tag your player ‘Player’.");
         else
             Debug.Log("✅ GoblinAI: Player found — " + player.name);
 
         ChangeState(GoblinState.Patrol);
     }
 
-
-
-
     private void Update()
     {
         if (isDead || player == null) return;
+        if (m_Animator.applyRootMotion && navMeshAgent.enabled)
+    navMeshAgent.velocity = Vector3.zero;
 
         switch (currentState)
         {
-           
-            case GoblinState.Patrol:
-                Patrol(); break;
-            case GoblinState.Chase:
-                Chase(); break;
-            case GoblinState.Attack:
-                Attack(); break;
-            case GoblinState.Dead:
-                break;
+            case GoblinState.Patrol: Patrol(); break;
+            case GoblinState.Chase: Chase(); break;
+            case GoblinState.Attack: Attack(); break;
+            case GoblinState.Dead: break;
         }
     }
 
     private void ChangeState(GoblinState newState)
     {
+        Debug.Log($"⚙️ Goblin state changed to {newState}");
         currentState = newState;
     }
 
-    
-
     private void Patrol()
     {
-        Debug.Log("Goblin is in Patrol state");
-
         m_Animator.SetFloat("Speed", patrolSpeed);
         navMeshAgent.speed = patrolSpeed;
 
@@ -87,14 +85,12 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
         if (!navMeshAgent.hasPath || navMeshAgent.remainingDistance < 0.5f)
         {
-            Debug.Log("Goblin moving to waypoint: " + waypoints[currentWaypointIndex].name);
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             navMeshAgent.SetDestination(waypoints[currentWaypointIndex].position);
         }
 
         if (CanSeePlayer()) ChangeState(GoblinState.Chase);
     }
-
 
     private void Chase()
     {
@@ -110,7 +106,8 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private void Attack()
     {
         navMeshAgent.isStopped = true;
-
+        m_Animator.SetFloat("Speed", 0f); 
+        
         if (Time.time >= nextAttackTime)
         {
             m_Animator.SetTrigger("Attack");
@@ -131,7 +128,6 @@ public class GoblinAI : MonoBehaviour, IEnemy
         if (player != null && Vector3.Distance(transform.position, player.position) <= attackRange + 0.5f)
         {
             player.SendMessage("GetDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
-
         }
     }
 
@@ -147,43 +143,73 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
     private bool CanSeePlayer()
     {
-        float dist = Vector3.Distance(transform.position, player.position);
-        Debug.Log("Checking distance to player: " + dist);
+        float d = Vector3.Distance(transform.position, player.position);
+        if (d > viewRadius) return false;
 
-        if (dist > viewRadius) return false;
+        Vector3 dir = (player.position - transform.position).normalized;
+        float a = Vector3.Angle(transform.forward, dir);
+        if (a > viewAngle / 2) return false;
 
-        Vector3 dirToPlayer = (player.position - transform.position).normalized;
-        float angle = Vector3.Angle(transform.forward, dirToPlayer);
-        Debug.Log("Angle to player: " + angle);
-
-        if (angle < viewAngle / 2f)
+        Vector3 origin = transform.position + Vector3.up * 1f;
+        if (Physics.Raycast(origin, dir, out RaycastHit hit, viewRadius, obstacleMask))
         {
-            if (!Physics.Raycast(transform.position, dirToPlayer, viewRadius, obstacleMask))
-            {
-                Debug.Log("✅ Goblin sees the player!");
-                return true;
-            }
-            else
-            {
-                Debug.Log("❌ Goblin's view is blocked by something.");
-            }
-        }
-        else
-        {
-            Debug.Log("❌ Player is outside of field of view.");
+            Debug.Log($"🚧 View blocked by {hit.collider.name}");
+            return false;
         }
 
-        return false;
+        Debug.Log("✅ Goblin sees the player!");
+        return true;
     }
 
+    public void OnAttackStart()
+    {
+        if (weaponHandler != null)
+            weaponHandler.EnableWeaponCollider();
+    }
 
+    public void OnAttackEnd()
+    {
+        if (weaponHandler != null)
+            weaponHandler.DisableWeaponCollider();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, viewRadius);
+
+        Vector3 leftRay = DirFromAngle(-viewAngle / 2);
+        Vector3 rightRay = DirFromAngle(viewAngle / 2);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + leftRay * viewRadius);
+        Gizmos.DrawLine(transform.position, transform.position + rightRay * viewRadius);
+    }
+
+    private Vector3 DirFromAngle(float angle)
+    {
+        angle += transform.eulerAngles.y;
+        return new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
+    }
 
     public void GetDamage(float damage)
-    {
-        if (isDead) return;
-        currentHp -= damage;
-        if (currentHp <= 0) Die();
-    }
+{
+    if (isDead) return;
+
+    currentHp -= damage;
+    Debug.Log($"🩸 Goblin took {damage} damage. Remaining HP: {currentHp}");
+    
+    if (bloodEffect != null)
+        bloodEffect.Play();
+
+    // 🔁 Knockback logic here
+    Vector3 knockbackDir = (transform.position - player.position).normalized;
+    navMeshAgent.Move(knockbackDir * 0.5f); // Push back slightly
+
+    if (currentHp <= 0) Die();
+}
+
+
     private void EnableRagdoll(bool active)
     {
         foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
@@ -198,17 +224,16 @@ public class GoblinAI : MonoBehaviour, IEnemy
         GetComponent<Animator>().enabled = !active;
     }
 
-        private void Die()
+    private void Die()
     {
         ChangeState(GoblinState.Dead);
         navMeshAgent.isStopped = true;
         navMeshAgent.enabled = false;
 
-        m_Animator.enabled = false; // 🔁 disable animation control
-        EnableRagdoll(true);        // ✅ turn on ragdoll
+        m_Animator.enabled = false;
+        EnableRagdoll(true);
 
         GetComponent<Collider>().enabled = false;
         Destroy(gameObject, 5f);
     }
-
 }

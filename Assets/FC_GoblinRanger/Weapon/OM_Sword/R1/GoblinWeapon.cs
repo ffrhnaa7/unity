@@ -2,34 +2,55 @@ using UnityEngine;
 
 public class GoblinWeaponHandler : MonoBehaviour
 {
-    [SerializeField] private GameObject swordPrefab;      // Drag OM_Sword_R1 prefab here
-    [SerializeField] private Transform handTransform;      // Assign BN_RightHand in Inspector
+    [Header("Assign the child sword GameObject manually in Inspector")]
+    [SerializeField] private GameObject swordInstance;
 
-    private GameObject swordInstance;
+    private Collider swordCollider;
 
-    void Start()
+    private void Awake()
     {
-        WeaponEnable(true);  // Enable sword on start (optional)
-    }
-
-    public void WeaponEnable(bool active)
-    {
-        if (swordInstance != null)
+        if (swordInstance == null)
         {
-            swordInstance.SetActive(active);
+            Debug.LogError("❌ GoblinWeaponHandler: Sword instance not assigned.");
+            enabled = false;
             return;
         }
 
-        if (swordPrefab != null && handTransform != null)
+        // Try to find a collider on the sword
+        swordCollider = swordInstance.GetComponent<Collider>();
+        if (swordCollider == null)
         {
-            swordInstance = Instantiate(swordPrefab, handTransform);
-            swordInstance.SetActive(active);
+            Debug.LogError("❌ GoblinWeaponHandler: No Collider found on the sword.");
+            enabled = false;
+            return;
         }
-        else
+
+        // Ensure sword is visible, but collider is off by default
+        swordInstance.SetActive(true);
+        swordCollider.enabled = false;
+    }
+
+    /// <summary>
+    /// Called by Animation Event when attack begins
+    /// </summary>
+    public void EnableWeaponCollider()
+    {
+        if (swordCollider != null)
         {
-            Debug.LogWarning("GoblinWeaponHandler: Missing swordPrefab or handTransform!");
+            swordCollider.enabled = true;
+            Debug.Log("✅ Sword collider enabled");
         }
     }
 
-
+    /// <summary>
+    /// Called by Animation Event when attack ends
+    /// </summary>
+    public void DisableWeaponCollider()
+    {
+        if (swordCollider != null)
+        {
+            swordCollider.enabled = false;
+            Debug.Log("🛑 Sword collider disabled");
+        }
+    }
 }
