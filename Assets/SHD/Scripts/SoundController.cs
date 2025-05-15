@@ -13,6 +13,8 @@ public class SoundController : MonoBehaviour
     public AudioClip footSoundRight;
     public AudioClip deadSound;
 
+    public AudioClip ScreamingSound;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -63,6 +65,14 @@ public class SoundController : MonoBehaviour
     {
         audioSource.clip = deadSound;
         audioSource.pitch = 0.85f;
+        audioSource.time = 0f;
+        audioSource.Play();
+    }
+
+    public void ScreamSound()
+    {
+        audioSource.clip = ScreamingSound;
+        audioSource.pitch = 1.0f;
         audioSource.time = 0f;
         audioSource.Play();
     }

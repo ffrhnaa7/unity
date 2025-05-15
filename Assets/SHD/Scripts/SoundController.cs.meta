@@ -12,6 +12,7 @@ MonoImporter:
   - footSoundLeft: {fileID: 8300000, guid: 9ac942ff6932b85498ac675519dfb6ce, type: 3}
   - footSoundRight: {fileID: 8300000, guid: c901b8f0945a2584a90262b2889c1b34, type: 3}
   - deadSound: {fileID: 8300000, guid: ec1013ef2c658784dbbd6ed24431af7c, type: 3}
+  - ScreamingSound: {fileID: 8300000, guid: d8145b9d21f2f444698291ed6550f159, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
