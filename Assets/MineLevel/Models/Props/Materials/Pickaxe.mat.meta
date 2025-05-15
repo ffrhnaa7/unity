@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2e74fce41d2c1ee4bacef44a005e9f32
+timeCreated: 1496605116
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 92461
+  packageName: Mine
+  packageVersion: 1.0
+  assetPath: Assets/Mine/Models/Props/Materials/Pickaxe.mat
+  uploadId: 183947

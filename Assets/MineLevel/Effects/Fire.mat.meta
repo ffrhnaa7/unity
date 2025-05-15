@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1d3759ca4b2d87d479033f85702364ad
+timeCreated: 1496776623
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 92461
+  packageName: Mine
+  packageVersion: 1.0
+  assetPath: Assets/Mine/Effects/Fire.mat
+  uploadId: 183947

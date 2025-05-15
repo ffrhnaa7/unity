@@ -13,6 +13,7 @@ namespace StarterAssets
 		public bool dodge;
 		public bool sprint;
 		public bool attack;
+		public bool guard;
 
         [Header("Movement Settings")]
 		public bool analogMovement;
@@ -57,6 +58,15 @@ namespace StarterAssets
 				AttackInput(true);
             }
         }
+		public void OnGuard(InputAction.CallbackContext context)
+		{
+            GuardInput(context.performed);
+
+            if (context.performed)
+			{
+				//GuardInput(true);
+			}
+		}
 #endif
 
 		public void MoveInput(Vector2 newMoveDirection)
@@ -79,7 +89,12 @@ namespace StarterAssets
 			sprint = newSprintState;
 		}
 
-		private void OnApplicationFocus(bool hasFocus)
+		public void GuardInput(bool newGuardState)
+		{
+			guard = newGuardState;
+		}
+
+        private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}

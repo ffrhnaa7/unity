@@ -7,6 +7,8 @@ public class BossEmergence : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         bossAI = animator.GetComponent<BossAI>();
+        bossAI.audioSource.clip = bossAI.emergenceSound;
+        bossAI.audioSource.PlayDelayed(0.75f);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
