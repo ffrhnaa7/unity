@@ -8,7 +8,11 @@ public class GoblinWeaponCollider : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("⚔️ Sword hit player");
             other.SendMessage("GetDamage", damage, SendMessageOptions.DontRequireReceiver);
+
+            // prevent multiple hits if necessary
+            GetComponent<Collider>().enabled = false;
         }
     }
 }

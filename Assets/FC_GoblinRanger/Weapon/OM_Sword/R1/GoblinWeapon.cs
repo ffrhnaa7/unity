@@ -16,7 +16,7 @@ public class GoblinWeaponHandler : MonoBehaviour
             return;
         }
 
-        // Try to find a collider on the sword
+        // find a collider on the sword
         swordCollider = swordInstance.GetComponent<Collider>();
         if (swordCollider == null)
         {
