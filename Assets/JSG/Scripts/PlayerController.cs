@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cinemachine.Utility;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
@@ -30,7 +31,7 @@ namespace StarterAssets
         public float SprintSpeed = 5.335f;
 
         [Tooltip("Dodge speed of the character in m/s")]
-        public float DodgeSpeed = 6f;
+        public float DodgeSpeed = 10f;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -145,6 +146,7 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private WeaponController _weapon;
+        private AnimationMover _animationMover;
 
         private const float _threshold = 0.01f;
 
@@ -180,6 +182,8 @@ namespace StarterAssets
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
             _weapon = WeaponObject.GetComponent<WeaponController>();
+            _animationMover = GetComponent<AnimationMover>();
+
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -378,7 +382,7 @@ namespace StarterAssets
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
                     transform.rotation = GetFacingRotationFromInput();
-
+                    _animationMover.StopAutoMove();
                     _dodging = true;
 
                     ResetAllAnimationTrigger();
@@ -565,7 +569,6 @@ namespace StarterAssets
         public void OnAttackEnd()
         {
             _weapon.WeaponEnable(false);
-            _controller.Move(Vector3.zero);
         }
 
         public void EnableBehavior(uint Flag)
@@ -587,6 +590,10 @@ namespace StarterAssets
         public void DisableBehavior(EPlayerBehavior Behavior)
         {
             _behavior &= ~(uint)Behavior;
+            //if (Behavior == EPlayerBehavior.Move)
+            //{
+            //    InitMove();
+            //}
         }
         public bool HasBehavior(EPlayerBehavior Behavior)
         {
@@ -606,6 +613,15 @@ namespace StarterAssets
         public void SetGuard(bool GuardState)
         {
             _guarding = GuardState;
+        }
+        public void InitMove()
+        {
+            _input.move = Vector3.zero;
+        }
+
+        public void DodgeEnd()
+        {
+            _dodgeTimeoutDelta = 0f;
         }
     }
 }

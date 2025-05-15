@@ -21,7 +21,10 @@ public class HitStop : MonoBehaviour
         if (!_stopping)
             StartCoroutine(HitStopCoroutine());
     }
-
+    public bool isHitStop()
+    {
+        return _stopping;
+    }
     private IEnumerator HitStopCoroutine()
     {
         _stopping = true;

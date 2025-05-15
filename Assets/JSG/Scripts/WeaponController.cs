@@ -36,7 +36,7 @@ public class WeaponController : MonoBehaviour
     {
         if (other.TryGetComponent(out IEnemy Enemy))
         {
-            Debug.Log("Weapon Collider Detected Enemy");
+            //Debug.Log("Weapon Collider Detected Enemy");
             Enemy.GetDamage(_damage);
             _hitStop.DoHitStop();
         }
