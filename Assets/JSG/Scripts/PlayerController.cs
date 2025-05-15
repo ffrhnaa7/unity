@@ -99,6 +99,7 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
         private bool _dodging = false;
+        private bool _guarding = false;
         private float _hp = 0.0f;
         private int _attackCount = 0;
         [Flags, Serializable]
@@ -547,6 +548,11 @@ namespace StarterAssets
         // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
+            if (_guarding)
+            {
+                Debug.Log("가드중이라 데미지 안받음");
+                return false;
+            }
             _hp = Mathf.Max(0, _hp - damage);
             _animator.SetTrigger(_animIDHitWeak);
             return true;
@@ -597,6 +603,9 @@ namespace StarterAssets
             Debug.Log($"{Log}");
         }
 
-        
+        public void SetGuard(bool GuardState)
+        {
+            _guarding = GuardState;
+        }
     }
 }
