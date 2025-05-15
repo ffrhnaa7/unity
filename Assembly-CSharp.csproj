@@ -65,16 +65,17 @@
     <Compile Include="Assets\JSG\Scripts\AnimatorDebugger.cs" />
     <Compile Include="Assets\GoblinAI.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualJoystick.cs" />
+    <Compile Include="Assets\PHN\FC_GoblinRanger\R1\EnemyMovement.cs" />
     <Compile Include="Assets\SHD\Scripts\BossTrigger.cs" />
     <Compile Include="Assets\JSG\Scripts\PlayerController.cs" />
     <Compile Include="Assets\DoubleL\Demo\DemoCameraController.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\JSG\Scripts\BehaviorTimeOut.cs" />
-    <Compile Include="Assets\FC_GoblinRanger\Weapon\OM_Sword\R1\GoblinWeapon.cs" />
+    <Compile Include="Assets\PHN\FC_GoblinRanger\Weapon\OM_Sword\R1\GoblinWeapon.cs" />
+    <Compile Include="Assets\PHN\FC_GoblinRanger\Weapon\OM_Sword\R1\GoblinWeaponCollider.cs" />
     <Compile Include="Assets\JSG\Scripts\OnGuard.cs" />
     <Compile Include="Assets\JSG\Scripts\AttackReset.cs" />
     <Compile Include="Assets\JSG\Scripts\ResetTrigger.cs" />
-    <Compile Include="Assets\FC_GoblinRanger\R1\EnemyMovement.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Commons\Scripts\IEnemy.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
     <Compile Include="Assets\SHD\Scripts\BossEmergence.cs" />
     <Compile Include="Assets\SHD\Scripts\DetectingPlayer.cs" />
-    <Compile Include="Assets\FC_GoblinRanger\Weapon\OM_Sword\R1\GoblinWeaponCollider.cs" />
     <Compile Include="Assets\StarterAssets\ThirdPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\SHD\Scripts\BossDamaged.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
