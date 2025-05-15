@@ -103,7 +103,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         else if (!CanSeePlayer()) ChangeState(GoblinState.Patrol);
     }
 
-    private void Attack()
+    private void Attack() //약간 문제 있음
     {
         navMeshAgent.isStopped = true;
         m_Animator.SetFloat("Speed", 0f); 
