@@ -7,7 +7,7 @@ public class ScreamTrigger : MonoBehaviour
 
     private void Awake()
     {
-        gameObject.GetComponent<Renderer>().enabled = false;
+        //gameObject.GetComponent<Renderer>().enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)

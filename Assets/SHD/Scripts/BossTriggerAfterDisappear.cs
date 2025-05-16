@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public class BossTrigger : MonoBehaviour
+public class BossTriggerAfterDisappear : MonoBehaviour
 {
     public Animator bossAnim;
     public GameObject bossPrefab;
+    public BossAI bossAI;
 
     private void Awake()
     {
@@ -12,8 +13,10 @@ public class BossTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
+            bossAI.ChangeRendererModeToOpaque();
+            bossAI.bossHp = 50;
             bossPrefab.SetActive(true);
             bossAnim.SetTrigger("Trigger");
             Debug.Log("Boss Appear");

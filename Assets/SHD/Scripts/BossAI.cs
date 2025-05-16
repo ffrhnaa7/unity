@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -32,9 +33,22 @@ public class BossAI : MonoBehaviour
     // 사운드 컨트롤러 변수
     public SoundController soundController;
 
+    // 보스 위치 컨트롤 오브젝트
+    public GameObject StartLocation;
+    public GameObject EndLocation;
+
+    // DisappearScene 변수
+    private bool hasDisappeared = false;
+    private Material bossMaterial;
+    private Renderer bossRenderer;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // 보스 위치를 시작 위치로 설정
+        transform.position = StartLocation.transform.position;
+
         // 공격 감지 콜라이더를 처음에는 false로 설정
         if (attackDetectCube != null)
         {
@@ -44,6 +58,10 @@ public class BossAI : MonoBehaviour
             fireAttackCollider = fireAttackDetectCube.GetComponent<BoxCollider>();
             fireAttackCollider.enabled = false;
         }
+
+        // BossMaterial & BossRenderer 초기화
+        bossRenderer = GetComponentInChildren<Renderer>();
+        bossMaterial = bossRenderer.material;
     }
 
     // Update is called once per frame
@@ -63,6 +81,9 @@ public class BossAI : MonoBehaviour
             else
                 ChasePlayer();
         }
+
+        // 보스가 사라지는지 계속 확인
+        IsDisappeared();
 
         // 보스가 죽는지 계속 확인
         BossDeath();
@@ -204,6 +225,80 @@ public class BossAI : MonoBehaviour
             StartCoroutine(AttackPlayer_2());
         else
             StartCoroutine(FiringPlayer());
+    }
+
+    // DisappearScene 함수
+    void IsDisappeared()
+    {
+        if (bossHp <= 50 && !hasDisappeared)
+        {
+            StartCoroutine(Disappeared());
+            bossHp = 50;
+            hasDisappeared = true;
+            return;
+        }
+    }
+
+    // DisappearScene 코루틴
+    IEnumerator Disappeared()
+    {
+        isActive = false;
+        Destroy(fireInstance);
+        soundController.ScreamSound();
+        ChangeRendererModeToFade();
+        animator.SetTrigger("Disappear");
+
+        yield return new WaitForSeconds(1.5f);
+
+        float fadeDuration = 2.0f;
+        float elapsedTime = 0.0f;
+
+        Color startColor = bossMaterial.color;
+        Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
+
+        while (elapsedTime <= fadeDuration)
+        {
+            bossMaterial.color = Color.Lerp(startColor, endColor, elapsedTime / fadeDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        bossMaterial.color = endColor;
+        gameObject.SetActive(false);
+
+        transform.position = EndLocation.transform.position;
+        transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+    }
+
+    // Boss Renderer Mode = fade
+    void ChangeRendererModeToFade()
+    {
+        bossMaterial.SetFloat("_Mode", 2); // 2 = Fade
+        bossMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        bossMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        bossMaterial.SetInt("_ZWrite", 0);
+        bossMaterial.DisableKeyword("_ALPHATEST_ON");
+        bossMaterial.EnableKeyword("_ALPHABLEND_ON");
+        bossMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        bossMaterial.renderQueue = 3000;
+    }
+
+    // Boss Renderer Mode = opaque
+    public void ChangeRendererModeToOpaque()
+    {
+        bossMaterial.SetFloat("_Mode", 0); // 0 = Opaque
+        bossMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        bossMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+        bossMaterial.SetInt("_ZWrite", 1);
+        bossMaterial.EnableKeyword("_ALPHATEST_ON");
+        bossMaterial.DisableKeyword("_ALPHABLEND_ON");
+        bossMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        bossMaterial.renderQueue = -1;
+
+        // 알파 값도 다시 1로 설정 (완전 불투명)
+        Color color = bossMaterial.color;
+        color.a = 1f;
+        bossMaterial.color = color;
     }
 
     // Death 함수
