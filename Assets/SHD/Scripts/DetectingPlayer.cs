@@ -1,4 +1,5 @@
 using UnityEngine;
+using StarterAssets;
 
 public class DetectingPlayer : MonoBehaviour
 {
@@ -8,7 +9,8 @@ public class DetectingPlayer : MonoBehaviour
         {
             Debug.Log("Damaged");
             // 플레이어 피 깎기
-
+            PlayerController pc = other.GetComponent<PlayerController>();
+            pc.GetDamage(10);
         }
     }
 }

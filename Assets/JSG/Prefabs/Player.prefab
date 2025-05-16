@@ -4805,8 +4805,9 @@ GameObject:
   - component: {fileID: 4794588192406108915}
   - component: {fileID: 4656397825327766288}
   - component: {fileID: 5436217278532705071}
+  - component: {fileID: 3831469343458354202}
   m_Layer: 6
-  m_Name: NewPlayer
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4998,6 +4999,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 23dd86b4-1967-4965-a1d1-6ded5b430931
     m_ActionName: 'Player/Guard[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4656397825327766288}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnDebug
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 81a30ed7-3861-489d-b063-ca0dad20ca6b
+    m_ActionName: 'Player/Debug[/Keyboard/g]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -5021,6 +5038,7 @@ MonoBehaviour:
   sprint: 0
   attack: 0
   guard: 0
+  debug: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -5061,6 +5079,19 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+--- !u!114 &3831469343458354202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089727579320358960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfdc1ef1edb4cb24795ee9fcad935ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StopDuration: 0.2
 --- !u!1 &5110229157649555705
 GameObject:
   m_ObjectHideFlags: 0

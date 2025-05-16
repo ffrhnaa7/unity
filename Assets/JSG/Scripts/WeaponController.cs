@@ -9,40 +9,21 @@ public class WeaponController : MonoBehaviour
 
     [SerializeField]
     private float _damage = 10;
-    private float _dalayTime = 0.25f;
+
+    private HitStop _hitStop;
     private void Awake()
     {
         if (Player == null) Debug.LogError("Player is null");
 
+        _hitStop = Player.GetComponent<HitStop>();
+        if (_hitStop == null)
+        {
+            Debug.LogError("Failed to find HitStop Script");
+        }
+
         _meleeArea = GetComponent<CapsuleCollider>();
         Trail.enabled = false;
         _meleeArea.enabled = false;
-    }
-
-    public void ActiveWeapon(bool active)
-    {
-        gameObject.SetActive(active);
-    }
-
-    public void Use(float Time = 0.25f)
-    {
-        //Debug.Log("Use");
-        //_dalayTime = Time;
-
-        //StopCoroutine("Swing");
-        //StartCoroutine("Swing");
-    }
-
-    IEnumerator Swing()
-    {
-        //yield return new WaitForSeconds(0.25f);
-        //Trail.enabled = true;
-        //_meleeArea.enabled = true;
-        //Debug.Log("Swing, before WaitForSeconds");
-        yield return new WaitForSeconds(_dalayTime);
-        //Debug.Log("Swing, After WaitForSeconds");
-        //Trail.enabled = false;
-        //_meleeArea.enabled = false;
     }
 
     public void WeaponEnable(bool Enable)
@@ -55,7 +36,9 @@ public class WeaponController : MonoBehaviour
     {
         if (other.TryGetComponent(out IEnemy Enemy))
         {
+            //Debug.Log("Weapon Collider Detected Enemy");
             Enemy.GetDamage(_damage);
+            _hitStop.DoHitStop();
         }
     }
 }
