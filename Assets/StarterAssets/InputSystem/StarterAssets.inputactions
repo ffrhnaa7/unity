@@ -42,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Attack",
+                    "name": "WeakAttack",
                     "type": "Button",
                     "id": "fc4df42b-6d1d-48e8-b5aa-10a1fdaba899",
                     "expectedControlType": "",
@@ -63,6 +63,15 @@
                     "name": "Debug",
                     "type": "Button",
                     "id": "81a30ed7-3861-489d-b063-ca0dad20ca6b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "StrongAttack",
+                    "type": "Button",
+                    "id": "e7d0cdba-f9b0-4928-a93d-a14acf236d12",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -253,7 +262,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Attack",
+                    "action": "WeakAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -276,6 +285,17 @@
                     "processors": "",
                     "groups": ";KeyboardMouse",
                     "action": "Debug",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "667d435e-9273-4ed4-bc03-25d1b717af6d",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardMouse",
+                    "action": "StrongAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
