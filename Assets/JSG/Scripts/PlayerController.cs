@@ -102,7 +102,6 @@ namespace StarterAssets
         private bool _dodging = false;
         private bool _guarding = false;
         private float _hp = 0.0f;
-        private int _attackCount = 0;
         [Flags, Serializable]
         public enum EPlayerBehavior : int
         {
@@ -133,10 +132,13 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
         private int _animIDAttackTrigger;
+        private int _animIDStrongAttackTrigger;
         private int _animIDAttackCount;
         private int _animIDDodgeTrigger;
+        private int _animIDAnyTrigger;
         private int _animIDGuard;
         private int _animIDHitWeak;
+        private int _animIDDodgeAnim;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -226,11 +228,14 @@ namespace StarterAssets
             _animIDJump         = Animator.StringToHash("Jump");
             _animIDFreeFall     = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed  = Animator.StringToHash("MotionSpeed");
-            _animIDAttackTrigger= Animator.StringToHash("AttackTrigger");
+            _animIDAttackTrigger= Animator.StringToHash("Attack");
+            _animIDStrongAttackTrigger = Animator.StringToHash("STAttack");
             _animIDAttackCount  = Animator.StringToHash("AttackCount");
             _animIDDodgeTrigger = Animator.StringToHash("Dodge");
             _animIDGuard        = Animator.StringToHash("Guard");
             _animIDHitWeak      = Animator.StringToHash("HitWeak");
+            _animIDDodgeAnim    = Animator.StringToHash("Dodge");
+            _animIDAnyTrigger   = Animator.StringToHash("Any");
         }
 
         private Quaternion GetFacingRotationFromInput()
@@ -387,6 +392,8 @@ namespace StarterAssets
 
                     ResetAllAnimationTrigger();
                     _animator.SetTrigger(_animIDDodgeTrigger);
+                    _animator.SetTrigger(_animIDAnyTrigger);
+                    //_animator.Play(_animIDDodgeAnim);
                     DisableBehavior(EPlayerBehavior.Move);
                     _dodgeTimeoutDelta = dodgeTimeout;
 
@@ -483,9 +490,13 @@ namespace StarterAssets
             if (_input.attack && HasBehavior(EPlayerBehavior.Attack))
             {
                 _animator.SetTrigger(_animIDAttackTrigger);
-                _animator.SetInteger(_animIDAttackCount, _attackCount);
+                //_animator.SetInteger(_animIDAttackCount, _attackCount);
                 //_attackCount++;
                 _input.attack = false;
+            }
+            else if (_input.strongAttack)
+            {
+                _animator.SetTrigger(_animIDStrongAttackTrigger);
             }
             else
             {
@@ -538,7 +549,7 @@ namespace StarterAssets
         {
             _animator.ResetTrigger(_animIDAttackTrigger);
             _animator.ResetTrigger(_animIDDodgeTrigger);
-
+            _animator.ResetTrigger(_animIDAnyTrigger);
         }
 
         private void DebugUpdate()
@@ -559,6 +570,8 @@ namespace StarterAssets
             }
             _hp = Mathf.Max(0, _hp - damage);
             _animator.SetTrigger(_animIDHitWeak);
+            _animator.SetTrigger(_animIDAnyTrigger);
+
             return true;
         }
 
@@ -590,10 +603,6 @@ namespace StarterAssets
         public void DisableBehavior(EPlayerBehavior Behavior)
         {
             _behavior &= ~(uint)Behavior;
-            //if (Behavior == EPlayerBehavior.Move)
-            //{
-            //    InitMove();
-            //}
         }
         public bool HasBehavior(EPlayerBehavior Behavior)
         {
@@ -616,7 +625,7 @@ namespace StarterAssets
         }
         public void InitMove()
         {
-            _input.move = Vector3.zero;
+            _controller.Move(Vector3.zero);
         }
 
         public void DodgeEnd()

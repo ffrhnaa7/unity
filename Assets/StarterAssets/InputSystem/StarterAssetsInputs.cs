@@ -16,6 +16,7 @@ namespace StarterAssets
 		public bool attack;
 		public bool guard;
 		public bool debug;
+		public bool strongAttack;
 
         [Header("Movement Settings")]
 		public bool analogMovement;
@@ -60,6 +61,11 @@ namespace StarterAssets
 				AttackInput(true);
             }
         }
+
+		public void OnStrongAttack(InputAction.CallbackContext context)
+		{
+			StrongAttackInput(context.performed);
+		}
 		public void OnGuard(InputAction.CallbackContext context)
 		{
             GuardInput(context.performed);
@@ -113,6 +119,10 @@ namespace StarterAssets
 		private void AttackInput(bool newAttackState)
 		{
 			attack = newAttackState;
+		}
+		private void StrongAttackInput(bool newStrongAttackState)
+		{
+			strongAttack = newStrongAttackState;
 		}
 	}
 	
