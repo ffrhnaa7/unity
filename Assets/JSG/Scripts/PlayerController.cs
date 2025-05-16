@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -149,6 +151,7 @@ namespace StarterAssets
         private GameObject _mainCamera;
         private WeaponController _weapon;
         private AnimationMover _animationMover;
+        private CameraShaker _cameraShaker;
 
         private const float _threshold = 0.01f;
 
@@ -185,6 +188,7 @@ namespace StarterAssets
             _input = GetComponent<StarterAssetsInputs>();
             _weapon = WeaponObject.GetComponent<WeaponController>();
             _animationMover = GetComponent<AnimationMover>();
+            _cameraShaker = GetComponent<CameraShaker>();
 
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
@@ -571,7 +575,7 @@ namespace StarterAssets
             _hp = Mathf.Max(0, _hp - damage);
             _animator.SetTrigger(_animIDHitWeak);
             _animator.SetTrigger(_animIDAnyTrigger);
-
+            _cameraShaker.Shake(0.25f, new Vector3(0, 0.5f, 0));
             return true;
         }
 
@@ -632,5 +636,7 @@ namespace StarterAssets
         {
             _dodgeTimeoutDelta = 0f;
         }
+
+        
     }
 }

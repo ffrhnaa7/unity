@@ -8,7 +8,7 @@ public class WeaponController : MonoBehaviour
     public TrailRenderer Trail;
     private CapsuleCollider _meleeArea;
     private HashSet<IEnemy> _damagedTargets = new HashSet<IEnemy>();
-
+    private CameraShaker _cameraShaker;
     [SerializeField]
     private float _damage = 10;
 
@@ -22,7 +22,7 @@ public class WeaponController : MonoBehaviour
         {
             Debug.LogError("Failed to find HitStop Script");
         }
-
+        _cameraShaker = Player.GetComponent<CameraShaker>();
         _meleeArea = GetComponent<CapsuleCollider>();
         Trail.enabled = false;
         _meleeArea.enabled = false;
@@ -46,6 +46,7 @@ public class WeaponController : MonoBehaviour
             _damagedTargets.Add(Enemy);
             Enemy.GetDamage(_damage);
             _hitStop.DoHitStop();
+            _cameraShaker.Shake(.05f, new Vector3(0.15f, 0.15f, 0));
         }
     }
 }
