@@ -142,6 +142,7 @@ namespace StarterAssets
         private int _animIDDodgeTrigger;
         private int _animIDAnyTrigger;
         private int _animIDGuard;
+        private int _animIDGuardHit;
         private int _animIDHitWeak;
         private int _animIDDodgeAnim;
         private int _animIDDie;
@@ -158,7 +159,10 @@ namespace StarterAssets
         private CameraShaker _cameraShaker;
         private PlayerUIController _UIController;
         private const float _threshold = 0.01f;
-
+        private Vector3 _hitShake = new Vector3(0, 0.5f, 0);
+        private float _hitShakeDuration = 0.25f;
+        private Vector3 _guardBlockShake = new Vector3(0, 0, 0.5f);
+        private float _guardBlockShakeDuration = 0.5f;
         private bool _hasAnimator;
 
         private bool IsCurrentDeviceMouse
@@ -245,7 +249,8 @@ namespace StarterAssets
             _animIDHitWeak      = Animator.StringToHash("HitWeak");
             _animIDDodgeAnim    = Animator.StringToHash("Dodge");
             _animIDAnyTrigger   = Animator.StringToHash("Any");
-            _animIDDie   = Animator.StringToHash("Die");
+            _animIDDie          = Animator.StringToHash("Die");
+            _animIDGuardHit     = Animator.StringToHash("GuardHit");
         }
 
         private Quaternion GetFacingRotationFromInput()
@@ -598,20 +603,39 @@ namespace StarterAssets
                 return true;
             }
         }
-        // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
+        // -------------------------------------------------------------------------Public-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
+            Vector3 shakeStrenth;
+            float shakeDuration;
+
+            // 가드 중일땐 -> GuardBlock
             if (_guarding)
             {
-                Debug.Log("가드중이라 데미지 안받음");
-                return false;
+                damage /= 10;
+                shakeStrenth = _guardBlockShake;
+                shakeDuration = _guardBlockShakeDuration;
             }
-            if (SetHP(Mathf.Max(0, _hp - damage)))
+            else
             {
-                Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
-                _animator.SetTrigger(_animIDHitWeak);
-                _animator.SetTrigger(_animIDAnyTrigger);
-                _cameraShaker.Shake(0.25f, new Vector3(0, 0.5f, 0));
+                shakeStrenth = _hitShake;
+                shakeDuration = _hitShakeDuration;
+            }
+
+            Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
+            bool live = SetHP(Mathf.Max(0, _hp - damage));
+            _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            if (live)
+            {
+                if (_guarding)
+                {
+                    _animator.SetTrigger(_animIDGuardHit);
+                }
+                else
+                {
+                    _animator.SetTrigger(_animIDHitWeak);
+                    _animator.SetTrigger(_animIDAnyTrigger);
+                }
             }
             return true;
         }
