@@ -153,7 +153,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         }
         else
         {
-            m_state = EnemyState.GetDamage;
+            //m_state = EnemyState.GetDamage;
             currentTime = 0;
         }
         

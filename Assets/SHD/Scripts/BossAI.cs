@@ -364,5 +364,8 @@ public class BossAI : MonoBehaviour
     public void ActivateAI()
     {
         isActive = true;
+
+        // 시작 버그 수정 코드
+        ChasePlayer();
     }
 }
