@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
@@ -103,6 +104,8 @@ namespace StarterAssets
         private float _terminalVelocity = 53.0f;
         private bool _dodging = false;
         private bool _guarding = false;
+        private bool _die = false;
+
         private float _hp = 0.0f;
         [Flags, Serializable]
         public enum EPlayerBehavior : int
@@ -141,6 +144,7 @@ namespace StarterAssets
         private int _animIDGuard;
         private int _animIDHitWeak;
         private int _animIDDodgeAnim;
+        private int _animIDDie;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -152,7 +156,7 @@ namespace StarterAssets
         private WeaponController _weapon;
         private AnimationMover _animationMover;
         private CameraShaker _cameraShaker;
-
+        private PlayerUIController _UIController;
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -189,13 +193,14 @@ namespace StarterAssets
             _weapon = WeaponObject.GetComponent<WeaponController>();
             _animationMover = GetComponent<AnimationMover>();
             _cameraShaker = GetComponent<CameraShaker>();
-
+            _UIController = GetComponent<PlayerUIController>();
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
+            SetHP(MaxHP);
             AssignAnimationIDs();
 
             // reset our timeouts on start
@@ -240,6 +245,7 @@ namespace StarterAssets
             _animIDHitWeak      = Animator.StringToHash("HitWeak");
             _animIDDodgeAnim    = Animator.StringToHash("Dodge");
             _animIDAnyTrigger   = Animator.StringToHash("Any");
+            _animIDDie   = Animator.StringToHash("Die");
         }
 
         private Quaternion GetFacingRotationFromInput()
@@ -560,8 +566,36 @@ namespace StarterAssets
         {
             if (_input.debug)
             {
-                GetDamage(.1f);
+                GetDamage(50f);
                 _input.debug = false;
+            }
+        }
+        private void DieProcess()
+        {
+            if (_die == false)
+            {
+                _die = true;
+                Debug.Log("Die!");
+                _animator.SetBool(_animIDDie, true);
+                _animator.SetTrigger(_animIDAnyTrigger);
+                enabled = false;
+                Invoke("Restart", 5);
+            }
+        }
+
+        private bool SetHP(float hp)
+        {
+            _hp = hp;
+            _UIController.SetHPUI(MaxHP, _hp);
+
+            if (_hp <= 0f)
+            {
+                DieProcess();
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
         // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
@@ -572,10 +606,13 @@ namespace StarterAssets
                 Debug.Log("가드중이라 데미지 안받음");
                 return false;
             }
-            _hp = Mathf.Max(0, _hp - damage);
-            _animator.SetTrigger(_animIDHitWeak);
-            _animator.SetTrigger(_animIDAnyTrigger);
-            _cameraShaker.Shake(0.25f, new Vector3(0, 0.5f, 0));
+            if (SetHP(Mathf.Max(0, _hp - damage)))
+            {
+                Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
+                _animator.SetTrigger(_animIDHitWeak);
+                _animator.SetTrigger(_animIDAnyTrigger);
+                _cameraShaker.Shake(0.25f, new Vector3(0, 0.5f, 0));
+            }
             return true;
         }
 
@@ -637,6 +674,10 @@ namespace StarterAssets
             _dodgeTimeoutDelta = 0f;
         }
 
-        
+        public void Restart()
+        {
+            Scene currentScene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(currentScene.name);
+        }
     }
 }
