@@ -17,6 +17,7 @@ namespace StarterAssets
 		public bool guard;
 		public bool debug;
 		public bool strongAttack;
+		public bool special;
 
         [Header("Movement Settings")]
 		public bool analogMovement;
@@ -74,6 +75,10 @@ namespace StarterAssets
 		{
 			DebugInput(context.performed);
 		}
+		public void OnSpecial(InputAction.CallbackContext context)
+		{
+			SpecialInput(context.performed);
+		}
 #endif
 
 		public void MoveInput(Vector2 newMoveDirection)
@@ -104,6 +109,11 @@ namespace StarterAssets
 		public void DebugInput(bool newDebugState)
 		{
 			debug = newDebugState;
+		}
+
+		public void SpecialInput(bool newSpecialState)
+		{
+			special = newSpecialState;
 		}
 
         private void OnApplicationFocus(bool hasFocus)

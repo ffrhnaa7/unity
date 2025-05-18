@@ -104,6 +104,7 @@ namespace StarterAssets
         private float _terminalVelocity = 53.0f;
         private bool _dodging = false;
         private bool _guarding = false;
+        private bool _counterReady = false;
         private bool _die = false;
 
         private float _hp = 0.0f;
@@ -138,10 +139,13 @@ namespace StarterAssets
         private int _animIDMotionSpeed;
         private int _animIDAttackTrigger;
         private int _animIDStrongAttackTrigger;
+        private int _animIDCounterReady;
+        private int _animIDCounter;
         private int _animIDAttackCount;
         private int _animIDDodgeTrigger;
         private int _animIDAnyTrigger;
         private int _animIDGuard;
+        private int _animIDGuardHit;
         private int _animIDHitWeak;
         private int _animIDDodgeAnim;
         private int _animIDDie;
@@ -158,7 +162,10 @@ namespace StarterAssets
         private CameraShaker _cameraShaker;
         private PlayerUIController _UIController;
         private const float _threshold = 0.01f;
-
+        private Vector3 _hitShake = new Vector3(0, 0.5f, 0);
+        private float _hitShakeDuration = 0.25f;
+        private Vector3 _guardBlockShake = new Vector3(0, 0, 0.5f);
+        private float _guardBlockShakeDuration = 0.5f;
         private bool _hasAnimator;
 
         private bool IsCurrentDeviceMouse
@@ -245,7 +252,10 @@ namespace StarterAssets
             _animIDHitWeak      = Animator.StringToHash("HitWeak");
             _animIDDodgeAnim    = Animator.StringToHash("Dodge");
             _animIDAnyTrigger   = Animator.StringToHash("Any");
-            _animIDDie   = Animator.StringToHash("Die");
+            _animIDDie          = Animator.StringToHash("Die");
+            _animIDGuardHit     = Animator.StringToHash("GuardHit");
+            _animIDCounter      = Animator.StringToHash("Counter");
+            _animIDCounterReady = Animator.StringToHash("CounterReady");
         }
 
         private Quaternion GetFacingRotationFromInput()
@@ -397,7 +407,6 @@ namespace StarterAssets
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
                     transform.rotation = GetFacingRotationFromInput();
-                    _animationMover.StopAutoMove();
                     _dodging = true;
 
                     ResetAllAnimationTrigger();
@@ -427,8 +436,7 @@ namespace StarterAssets
 
             if (_dodging)
             {
-                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime) +
-                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime));
             }
         }
         private void ApplyGravity()
@@ -497,16 +505,26 @@ namespace StarterAssets
 
         private void Attack()
         {
-            if (_input.attack && HasBehavior(EPlayerBehavior.Attack))
+            if (HasBehavior(EPlayerBehavior.Attack))
             {
-                _animator.SetTrigger(_animIDAttackTrigger);
-                //_animator.SetInteger(_animIDAttackCount, _attackCount);
-                //_attackCount++;
-                _input.attack = false;
-            }
-            else if (_input.strongAttack)
-            {
-                _animator.SetTrigger(_animIDStrongAttackTrigger);
+                if (_input.attack)
+                {
+                    _animator.SetTrigger(_animIDAttackTrigger);
+                    _input.attack = false;
+                }
+                else if (_input.strongAttack && HasBehavior(EPlayerBehavior.Attack))
+                {
+                    if (_input.special)
+                    {
+                        _animator.SetTrigger(_animIDCounterReady);
+                        _counterReady = true;
+                    }
+                    else
+                    {
+                        _animator.SetTrigger(_animIDStrongAttackTrigger);
+                    }
+                    _input.strongAttack = false;
+                }
             }
             else
             {
@@ -598,20 +616,45 @@ namespace StarterAssets
                 return true;
             }
         }
-        // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
+        // -------------------------------------------------------------------------Public-----------------------------------------------------------------------------
         public bool GetDamage(float damage)
         {
+            Vector3 shakeStrenth;
+            float shakeDuration;
+
+            // 가드 중일땐 -> GuardBlock
             if (_guarding)
             {
-                Debug.Log("가드중이라 데미지 안받음");
-                return false;
+                damage /= 10;
+                shakeStrenth = _guardBlockShake;
+                shakeDuration = _guardBlockShakeDuration;
             }
-            if (SetHP(Mathf.Max(0, _hp - damage)))
+            else if (_counterReady)
             {
-                Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
-                _animator.SetTrigger(_animIDHitWeak);
-                _animator.SetTrigger(_animIDAnyTrigger);
-                _cameraShaker.Shake(0.25f, new Vector3(0, 0.5f, 0));
+                _counterReady = false;
+                _animator.SetTrigger(_animIDCounter);
+                return true;
+            }
+            else
+            {
+                shakeStrenth = _hitShake;
+                shakeDuration = _hitShakeDuration;
+            }
+
+            Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
+            bool live = SetHP(Mathf.Max(0, _hp - damage));
+            _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            if (live)
+            {
+                if (_guarding)
+                {
+                    _animator.SetTrigger(_animIDGuardHit);
+                }
+                else
+                {
+                    _animator.SetTrigger(_animIDHitWeak);
+                    _animator.SetTrigger(_animIDAnyTrigger);
+                }
             }
             return true;
         }
@@ -679,5 +722,7 @@ namespace StarterAssets
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
         }
+
+        
     }
 }
