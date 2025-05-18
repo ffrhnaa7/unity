@@ -64,7 +64,7 @@ ModelImporter:
       events:
       - time: 0.3405314
         functionName: StartAutoMove
-        data: speed=10;X=0;Z=1;
+        data: speed=7;X=0;Z=1;
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0

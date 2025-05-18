@@ -16,6 +16,8 @@ namespace StarterAssets
 		public bool attack;
 		public bool guard;
 		public bool debug;
+		public bool strongAttack;
+		public bool special;
 
         [Header("Movement Settings")]
 		public bool analogMovement;
@@ -60,6 +62,11 @@ namespace StarterAssets
 				AttackInput(true);
             }
         }
+
+		public void OnStrongAttack(InputAction.CallbackContext context)
+		{
+			StrongAttackInput(context.performed);
+		}
 		public void OnGuard(InputAction.CallbackContext context)
 		{
             GuardInput(context.performed);
@@ -67,6 +74,10 @@ namespace StarterAssets
 		public void OnDebug(InputAction.CallbackContext context)
 		{
 			DebugInput(context.performed);
+		}
+		public void OnSpecial(InputAction.CallbackContext context)
+		{
+			SpecialInput(context.performed);
 		}
 #endif
 
@@ -100,6 +111,11 @@ namespace StarterAssets
 			debug = newDebugState;
 		}
 
+		public void SpecialInput(bool newSpecialState)
+		{
+			special = newSpecialState;
+		}
+
         private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
@@ -113,6 +129,10 @@ namespace StarterAssets
 		private void AttackInput(bool newAttackState)
 		{
 			attack = newAttackState;
+		}
+		private void StrongAttackInput(bool newStrongAttackState)
+		{
+			strongAttack = newStrongAttackState;
 		}
 	}
 	

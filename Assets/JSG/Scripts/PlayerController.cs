@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using UnityEngine.SceneManagement;
+
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -101,8 +104,10 @@ namespace StarterAssets
         private float _terminalVelocity = 53.0f;
         private bool _dodging = false;
         private bool _guarding = false;
+        private bool _counterReady = false;
+        private bool _die = false;
+
         private float _hp = 0.0f;
-        private int _attackCount = 0;
         [Flags, Serializable]
         public enum EPlayerBehavior : int
         {
@@ -133,10 +138,17 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
         private int _animIDAttackTrigger;
+        private int _animIDStrongAttackTrigger;
+        private int _animIDCounterReady;
+        private int _animIDCounter;
         private int _animIDAttackCount;
         private int _animIDDodgeTrigger;
+        private int _animIDAnyTrigger;
         private int _animIDGuard;
+        private int _animIDGuardHit;
         private int _animIDHitWeak;
+        private int _animIDDodgeAnim;
+        private int _animIDDie;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -147,9 +159,13 @@ namespace StarterAssets
         private GameObject _mainCamera;
         private WeaponController _weapon;
         private AnimationMover _animationMover;
-
+        private CameraShaker _cameraShaker;
+        private PlayerUIController _UIController;
         private const float _threshold = 0.01f;
-
+        private Vector3 _hitShake = new Vector3(0, 0.5f, 0);
+        private float _hitShakeDuration = 0.25f;
+        private Vector3 _guardBlockShake = new Vector3(0, 0, 0.5f);
+        private float _guardBlockShakeDuration = 0.5f;
         private bool _hasAnimator;
 
         private bool IsCurrentDeviceMouse
@@ -183,13 +199,15 @@ namespace StarterAssets
             _input = GetComponent<StarterAssetsInputs>();
             _weapon = WeaponObject.GetComponent<WeaponController>();
             _animationMover = GetComponent<AnimationMover>();
-
+            _cameraShaker = GetComponent<CameraShaker>();
+            _UIController = GetComponent<PlayerUIController>();
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
+            SetHP(MaxHP);
             AssignAnimationIDs();
 
             // reset our timeouts on start
@@ -226,11 +244,18 @@ namespace StarterAssets
             _animIDJump         = Animator.StringToHash("Jump");
             _animIDFreeFall     = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed  = Animator.StringToHash("MotionSpeed");
-            _animIDAttackTrigger= Animator.StringToHash("AttackTrigger");
+            _animIDAttackTrigger= Animator.StringToHash("Attack");
+            _animIDStrongAttackTrigger = Animator.StringToHash("STAttack");
             _animIDAttackCount  = Animator.StringToHash("AttackCount");
             _animIDDodgeTrigger = Animator.StringToHash("Dodge");
             _animIDGuard        = Animator.StringToHash("Guard");
             _animIDHitWeak      = Animator.StringToHash("HitWeak");
+            _animIDDodgeAnim    = Animator.StringToHash("Dodge");
+            _animIDAnyTrigger   = Animator.StringToHash("Any");
+            _animIDDie          = Animator.StringToHash("Die");
+            _animIDGuardHit     = Animator.StringToHash("GuardHit");
+            _animIDCounter      = Animator.StringToHash("Counter");
+            _animIDCounterReady = Animator.StringToHash("CounterReady");
         }
 
         private Quaternion GetFacingRotationFromInput()
@@ -382,11 +407,12 @@ namespace StarterAssets
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
                     transform.rotation = GetFacingRotationFromInput();
-                    _animationMover.StopAutoMove();
                     _dodging = true;
 
                     ResetAllAnimationTrigger();
                     _animator.SetTrigger(_animIDDodgeTrigger);
+                    _animator.SetTrigger(_animIDAnyTrigger);
+                    //_animator.Play(_animIDDodgeAnim);
                     DisableBehavior(EPlayerBehavior.Move);
                     _dodgeTimeoutDelta = dodgeTimeout;
 
@@ -410,8 +436,7 @@ namespace StarterAssets
 
             if (_dodging)
             {
-                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime) +
-                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime));
             }
         }
         private void ApplyGravity()
@@ -480,12 +505,26 @@ namespace StarterAssets
 
         private void Attack()
         {
-            if (_input.attack && HasBehavior(EPlayerBehavior.Attack))
+            if (HasBehavior(EPlayerBehavior.Attack))
             {
-                _animator.SetTrigger(_animIDAttackTrigger);
-                _animator.SetInteger(_animIDAttackCount, _attackCount);
-                //_attackCount++;
-                _input.attack = false;
+                if (_input.attack)
+                {
+                    _animator.SetTrigger(_animIDAttackTrigger);
+                    _input.attack = false;
+                }
+                else if (_input.strongAttack && HasBehavior(EPlayerBehavior.Attack))
+                {
+                    if (_input.special)
+                    {
+                        _animator.SetTrigger(_animIDCounterReady);
+                        _counterReady = true;
+                    }
+                    else
+                    {
+                        _animator.SetTrigger(_animIDStrongAttackTrigger);
+                    }
+                    _input.strongAttack = false;
+                }
             }
             else
             {
@@ -538,27 +577,85 @@ namespace StarterAssets
         {
             _animator.ResetTrigger(_animIDAttackTrigger);
             _animator.ResetTrigger(_animIDDodgeTrigger);
-
+            _animator.ResetTrigger(_animIDAnyTrigger);
         }
 
         private void DebugUpdate()
         {
             if (_input.debug)
             {
-                GetDamage(.1f);
+                GetDamage(50f);
                 _input.debug = false;
             }
         }
-        // -------------------------------------------------------------------------CUSTOM-----------------------------------------------------------------------------
-        public bool GetDamage(float damage)
+        private void DieProcess()
         {
-            if (_guarding)
+            if (_die == false)
             {
-                Debug.Log("가드중이라 데미지 안받음");
+                _die = true;
+                Debug.Log("Die!");
+                _animator.SetBool(_animIDDie, true);
+                _animator.SetTrigger(_animIDAnyTrigger);
+                enabled = false;
+                Invoke("Restart", 5);
+            }
+        }
+
+        private bool SetHP(float hp)
+        {
+            _hp = hp;
+            _UIController.SetHPUI(MaxHP, _hp);
+
+            if (_hp <= 0f)
+            {
+                DieProcess();
                 return false;
             }
-            _hp = Mathf.Max(0, _hp - damage);
-            _animator.SetTrigger(_animIDHitWeak);
+            else
+            {
+                return true;
+            }
+        }
+        // -------------------------------------------------------------------------Public-----------------------------------------------------------------------------
+        public bool GetDamage(float damage)
+        {
+            Vector3 shakeStrenth;
+            float shakeDuration;
+
+            // 가드 중일땐 -> GuardBlock
+            if (_guarding)
+            {
+                damage /= 10;
+                shakeStrenth = _guardBlockShake;
+                shakeDuration = _guardBlockShakeDuration;
+            }
+            else if (_counterReady)
+            {
+                _counterReady = false;
+                _animator.SetTrigger(_animIDCounter);
+                return true;
+            }
+            else
+            {
+                shakeStrenth = _hitShake;
+                shakeDuration = _hitShakeDuration;
+            }
+
+            Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
+            bool live = SetHP(Mathf.Max(0, _hp - damage));
+            _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            if (live)
+            {
+                if (_guarding)
+                {
+                    _animator.SetTrigger(_animIDGuardHit);
+                }
+                else
+                {
+                    _animator.SetTrigger(_animIDHitWeak);
+                    _animator.SetTrigger(_animIDAnyTrigger);
+                }
+            }
             return true;
         }
 
@@ -590,10 +687,6 @@ namespace StarterAssets
         public void DisableBehavior(EPlayerBehavior Behavior)
         {
             _behavior &= ~(uint)Behavior;
-            //if (Behavior == EPlayerBehavior.Move)
-            //{
-            //    InitMove();
-            //}
         }
         public bool HasBehavior(EPlayerBehavior Behavior)
         {
@@ -616,12 +709,23 @@ namespace StarterAssets
         }
         public void InitMove()
         {
-            _input.move = Vector3.zero;
+            _controller.Move(Vector3.zero);
         }
 
         public void DodgeEnd()
         {
             _dodgeTimeoutDelta = 0f;
+        }
+
+        public void Restart()
+        {
+            Scene currentScene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(currentScene.name);
+        }
+
+        public void SetSwordColliderScale(float scale)
+        {
+            _weapon.SetSwordColliderScale(scale);
         }
     }
 }

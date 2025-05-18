@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 
@@ -30,9 +31,10 @@ public class HitStop : MonoBehaviour
         _stopping = true;
         float originalSpeed = _animator.speed;
         _animator.speed = 0f;
-
+        transform.DOPause();
         yield return new WaitForSecondsRealtime(StopDuration); // 게임 시간이 멈춰도 영향을 안 받게
 
+        transform.DORestart();
         _animator.speed = originalSpeed;
         _stopping = false;
     }
