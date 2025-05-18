@@ -32,46 +32,12 @@ public class AnimationMover : MonoBehaviour
             }
         }
     }
-    static Dictionary<string, float> ParseEventParams(string param)
-    {
-        Dictionary<string, float> parsed = new Dictionary<string, float>();
-        string key = "";
-        string value = "";
-        bool keyProcessing = true;
-        for(int i = 0; i < param.Length; i++)
-        {
-            if (param[i] == ';')
-            {
-                parsed[key] = float.Parse(value);
-
-                key = "";
-                value = "";
-                keyProcessing = true;
-            }
-            else if (param[i] == '=')
-            {
-                keyProcessing = false;
-            }
-            else
-            {
-                char c = char.ToLower(param[i]);
-                if (keyProcessing)
-                {
-                    key += c;
-                }
-                else
-                {
-                    value += c;
-                }
-            }
-        }
-        return parsed;
-    }
+    
     // 애니메이션 이벤트로 호출됨
     public void StartAutoMove(string param)
     {
         //Debug.Log($"StartAutoMove, {param}");
-        Dictionary<string, float> parsed = ParseEventParams(param);
+        Dictionary<string, float> parsed = ParamsParser.ParseEventParams(param);
         float speed = parsed["speed"];
         float dirX = parsed["x"];
         float dirZ = parsed["z"];
@@ -91,7 +57,7 @@ public class AnimationMover : MonoBehaviour
 
     public void StartAutoRotate(string param)
     {
-        Dictionary<string, float> parsed = ParseEventParams(param);
+        Dictionary<string, float> parsed = ParamsParser.ParseEventParams(param);
         float duration = parsed["duration"];
         float x = parsed["x"];
         float y = parsed["y"];

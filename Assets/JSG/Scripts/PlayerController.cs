@@ -723,6 +723,9 @@ namespace StarterAssets
             SceneManager.LoadScene(currentScene.name);
         }
 
-        
+        public void SetSwordColliderScale(float scale)
+        {
+            _weapon.SetSwordColliderScale(scale);
+        }
     }
 }

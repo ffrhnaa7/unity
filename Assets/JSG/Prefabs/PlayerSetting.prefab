@@ -300,6 +300,70 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9157645825726520120}
     m_Modifications:
+    - target: {fileID: 374945823409418641, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 374945823409418641, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: _trail
+      value: 
+      objectReference: {fileID: 2046495365998160182}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key0.a
+      value: 0.5882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key0.b
+      value: 0.057938762
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key0.g
+      value: 0.057938762
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key0.r
+      value: 0.5849056
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key1.a
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key1.b
+      value: 0.17488432
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key1.g
+      value: 0.17488432
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: HitGradient.key1.r
+      value: 0.2830189
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: OriginalGradient.key0.a
+      value: 0.39215687
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: OriginalGradient.key0.b
+      value: 0.254717
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: OriginalGradient.key0.g
+      value: 0.254717
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: OriginalGradient.key0.r
+      value: 0.254717
+      objectReference: {fileID: 0}
+    - target: {fileID: 386157918016652501, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: OriginalGradient.key1.a
+      value: 0.19607843
+      objectReference: {fileID: 0}
     - target: {fileID: 4794588192406108915, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
       propertyPath: m_ActionEvents.Array.size
       value: 9
@@ -449,6 +513,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3746230037284859857}
   m_SourcePrefab: {fileID: 100100000, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+--- !u!96 &2046495365998160182 stripped
+TrailRenderer:
+  m_CorrespondingSourceObject: {fileID: 8350137451060107154, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+  m_PrefabInstance: {fileID: 8036455230861360804}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2481115731832634414 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5614168943902474890, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
