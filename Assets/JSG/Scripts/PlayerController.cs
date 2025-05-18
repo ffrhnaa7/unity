@@ -104,6 +104,7 @@ namespace StarterAssets
         private float _terminalVelocity = 53.0f;
         private bool _dodging = false;
         private bool _guarding = false;
+        private bool _counterReady = false;
         private bool _die = false;
 
         private float _hp = 0.0f;
@@ -138,6 +139,8 @@ namespace StarterAssets
         private int _animIDMotionSpeed;
         private int _animIDAttackTrigger;
         private int _animIDStrongAttackTrigger;
+        private int _animIDCounterReady;
+        private int _animIDCounter;
         private int _animIDAttackCount;
         private int _animIDDodgeTrigger;
         private int _animIDAnyTrigger;
@@ -251,6 +254,8 @@ namespace StarterAssets
             _animIDAnyTrigger   = Animator.StringToHash("Any");
             _animIDDie          = Animator.StringToHash("Die");
             _animIDGuardHit     = Animator.StringToHash("GuardHit");
+            _animIDCounter      = Animator.StringToHash("Counter");
+            _animIDCounterReady = Animator.StringToHash("CounterReady");
         }
 
         private Quaternion GetFacingRotationFromInput()
@@ -402,7 +407,6 @@ namespace StarterAssets
                 if (_input.dodge && HasBehavior(EPlayerBehavior.Dodge) && _dodgeTimeoutDelta <= 0.0f)
                 {
                     transform.rotation = GetFacingRotationFromInput();
-                    _animationMover.StopAutoMove();
                     _dodging = true;
 
                     ResetAllAnimationTrigger();
@@ -432,8 +436,7 @@ namespace StarterAssets
 
             if (_dodging)
             {
-                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime) +
-                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+                _controller.Move(transform.forward * (DodgeSpeed * Time.deltaTime));
             }
         }
         private void ApplyGravity()
@@ -502,16 +505,26 @@ namespace StarterAssets
 
         private void Attack()
         {
-            if (_input.attack && HasBehavior(EPlayerBehavior.Attack))
+            if (HasBehavior(EPlayerBehavior.Attack))
             {
-                _animator.SetTrigger(_animIDAttackTrigger);
-                //_animator.SetInteger(_animIDAttackCount, _attackCount);
-                //_attackCount++;
-                _input.attack = false;
-            }
-            else if (_input.strongAttack)
-            {
-                _animator.SetTrigger(_animIDStrongAttackTrigger);
+                if (_input.attack)
+                {
+                    _animator.SetTrigger(_animIDAttackTrigger);
+                    _input.attack = false;
+                }
+                else if (_input.strongAttack && HasBehavior(EPlayerBehavior.Attack))
+                {
+                    if (_input.special)
+                    {
+                        _animator.SetTrigger(_animIDCounterReady);
+                        _counterReady = true;
+                    }
+                    else
+                    {
+                        _animator.SetTrigger(_animIDStrongAttackTrigger);
+                    }
+                    _input.strongAttack = false;
+                }
             }
             else
             {
@@ -616,6 +629,12 @@ namespace StarterAssets
                 shakeStrenth = _guardBlockShake;
                 shakeDuration = _guardBlockShakeDuration;
             }
+            else if (_counterReady)
+            {
+                _counterReady = false;
+                _animator.SetTrigger(_animIDCounter);
+                return true;
+            }
             else
             {
                 shakeStrenth = _hitShake;
@@ -703,5 +722,7 @@ namespace StarterAssets
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
         }
+
+        
     }
 }
