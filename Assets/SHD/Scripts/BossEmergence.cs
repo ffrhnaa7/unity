@@ -3,6 +3,7 @@ using UnityEngine;
 public class BossEmergence : StateMachineBehaviour
 {
     BossAI bossAI;
+    bool isPage2 = false;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -24,7 +25,15 @@ public class BossEmergence : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         // 보스 등장 애니메이션 끝
-        bossAI.ActivateAI();
+        if(!isPage2)
+        {
+            bossAI.ActivateAI();
+            isPage2 = true;
+        }
+        else
+        {
+            bossAI.ActivateAIForPage2();
+        }
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

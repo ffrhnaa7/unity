@@ -9,7 +9,8 @@ public class BossAI : MonoBehaviour
     public Transform player;
     public Animator animator;
     public NavMeshAgent agent;
-    public float bossHp = 100;
+    public float bossMaxHp = 300;
+    public float bossCurrentHp = 300;
     private bool isAttacking = false;
     private bool isActive = false;
 
@@ -20,14 +21,14 @@ public class BossAI : MonoBehaviour
     private Collider fireAttackCollider;
 
     // Attackng 변수
-    public float attackRange = 4.3f;
+    public float attackRange = 3.7f;
     public float attackCooldown = 1.7335f;
-    public float attackDamage = 10.0f;
+    public float attackDamage = 15.0f;
 
     // Firing 변수
     public GameObject firePrefab;
     public Transform fireSpawnPoint;
-    public float firingCooldown = 5.8f;
+    public float firingCooldown = 5.4f;
     private GameObject fireInstance;
 
     // 사운드 컨트롤러 변수
@@ -59,6 +60,8 @@ public class BossAI : MonoBehaviour
             fireAttackCollider.enabled = false;
         }
 
+        bossCurrentHp = bossMaxHp;
+
         // BossMaterial & BossRenderer 초기화
         bossRenderer = GetComponentInChildren<Renderer>();
         bossMaterial = bossRenderer.material;
@@ -76,9 +79,11 @@ public class BossAI : MonoBehaviour
         // 공격중이 아니면서 거리가 공격범위 안이면 공격하고 밖이면 추적
         if (!isAttacking)
         {
-            if (distance <= attackRange)
+            if (distance <= 1.5)
+                StartCoroutine(AttackPlayer_2());
+            else if (distance <= attackRange)
                 TryAttack();
-            else
+            else if (distance > attackRange)
                 ChasePlayer();
         }
 
@@ -230,10 +235,9 @@ public class BossAI : MonoBehaviour
     // DisappearScene 함수
     void IsDisappeared()
     {
-        if (bossHp <= 50 && !hasDisappeared)
+        if (bossCurrentHp <= bossMaxHp / 2 && !hasDisappeared)
         {
             StartCoroutine(Disappeared());
-            bossHp = 50;
             hasDisappeared = true;
             return;
         }
@@ -304,7 +308,7 @@ public class BossAI : MonoBehaviour
     // Death 함수
     void BossDeath()
     {
-        if(bossHp <= 0)
+        if(bossCurrentHp <= 0)
         {
             // Death 애니메이션 재생
             animator.SetTrigger("Death");
@@ -367,5 +371,11 @@ public class BossAI : MonoBehaviour
 
         // 시작 버그 수정 코드
         ChasePlayer();
+    }
+
+    public void ActivateAIForPage2()
+    {
+        isActive = true;
+        //animator.SetBool("isChasing", false);
     }
 }

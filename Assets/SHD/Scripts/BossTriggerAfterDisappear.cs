@@ -16,7 +16,9 @@ public class BossTriggerAfterDisappear : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             bossAI.ChangeRendererModeToOpaque();
-            bossAI.bossHp = 50;
+            bossAI.bossCurrentHp = bossAI.bossMaxHp / 2;
+            bossAI.attackDamage = 30.0f;
+            bossAI.DisableFireAttackCollider();
             bossPrefab.SetActive(true);
             bossAnim.SetTrigger("Trigger");
             Debug.Log("Boss Appear");
