@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 using StarterAssets;
 
@@ -24,12 +25,15 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     private Animator anim;
 
+    private NavMeshAgent agent;
+
     void Start()
     {
         m_state = EnemyState.Idle;
 
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()
@@ -95,6 +99,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             currentTime = attackDelayTime;
             return;
         }
+        
+        // NavMeshAgnet 설정 간 사용 안할 코드들
         dir.y = 0; // 너무 크면 쳐다볼 때, 하늘을 바라보는 오류 수정 코드
         dir.Normalize();
         // 2. 이동하고 싶다.
@@ -165,7 +171,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     
     // GetDamae 코드
 
-    private int hp = 10; // 초기 체력 설정
+    private int hp = 15; // 초기 체력 설정
     
     public void GetDamage(float damage)
     {
