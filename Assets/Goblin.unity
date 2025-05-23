@@ -490,7 +490,7 @@ PrefabInstance:
     - target: {fileID: 100042, guid: ed1f8609fea7f9348b92206e3d12581e, type: 3}
       propertyPath: m_Icon
       value: 
-      objectReference: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+      objectReference: {fileID: 0}
     - target: {fileID: 100042, guid: ed1f8609fea7f9348b92206e3d12581e, type: 3}
       propertyPath: m_Name
       value: GoblinAI
@@ -585,7 +585,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 7f73a1f2576a543498b68db1fbccd8a0, type: 2}
     - target: {fileID: 9500000, guid: ed1f8609fea7f9348b92206e3d12581e, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 13700000, guid: ed1f8609fea7f9348b92206e3d12581e, type: 3}
       propertyPath: m_AABB.m_Center.x
@@ -936,7 +936,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 2397015d3ede9944ca9dd9ae1825a88f, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: bcceb7c358781c74bb49650fb26d3378, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &1014451844 stripped
 GameObject:
