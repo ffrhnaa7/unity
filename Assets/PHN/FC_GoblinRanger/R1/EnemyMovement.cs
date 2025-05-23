@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
-public enum GoblinState
+public enum GoblinState //finite state machine concept
 {
-    Patrol,
-    Chase,
-    Attack,
-    Dead
+    Patrol, //when player is far
+    Chase, //when player is near
+    Attack, //when player is infront
+    Dead //after HP becomes 0
 }
 
 public class GoblinAI : MonoBehaviour, IEnemy
@@ -17,11 +18,11 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public LayerMask playerMask;
     public LayerMask obstacleMask;
 
-    public float patrolSpeed = 2f;
-    public float chaseSpeed = 4f;
+    public float patrolSpeed = 1.4f;
+    public float chaseSpeed = 3f;
     public float viewRadius = 15f;
     public float viewAngle = 90f;
-    public float attackRange = 2.5f;
+    public float attackRange = 0.3f;
     public float maxHp = 100f;
     public float attackDamage = 10f;
 
@@ -33,17 +34,21 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private float currentHp;
     private bool isDead = false;
     private GoblinWeaponHandler weaponHandler;
+    private float attackPrepareDelay = 0.1f;
+    private bool isPreparingAttack = false;
+
     [SerializeField] private ParticleSystem bloodEffect;
 
     private void Awake()
     {
+       
         m_Animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         weaponHandler = GetComponent<GoblinWeaponHandler>();
         currentHp = maxHp;
     }
 
-    private void Start()
+    private void Start() 
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
@@ -78,9 +83,9 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
     private void Patrol()
     {
-        m_Animator.SetFloat("Speed", patrolSpeed);
-        navMeshAgent.speed = patrolSpeed;
-
+        m_Animator.SetFloat("Speed", navMeshAgent.velocity.magnitude);
+        navMeshAgent.speed = patrolSpeed; //set speed under navMash
+        navMeshAgent.acceleration = 4f;
         if (waypoints.Length == 0) return;
 
         if (!navMeshAgent.hasPath || navMeshAgent.remainingDistance < 0.5f)
@@ -89,12 +94,14 @@ public class GoblinAI : MonoBehaviour, IEnemy
             navMeshAgent.SetDestination(waypoints[currentWaypointIndex].position);
         }
 
-        if (CanSeePlayer()) ChangeState(GoblinState.Chase);
+        if (CanSeePlayer()) ChangeState(GoblinState.Chase); //to chase
     }
 
-    private void Chase()
+   private void Chase()
     {
-        m_Animator.SetFloat("Speed", chaseSpeed);
+        navMeshAgent.isStopped = false;
+        float speed = navMeshAgent.velocity.magnitude;
+        m_Animator.SetFloat("Speed", speed);
         navMeshAgent.speed = chaseSpeed;
         navMeshAgent.SetDestination(player.position);
 
@@ -103,25 +110,42 @@ public class GoblinAI : MonoBehaviour, IEnemy
         else if (!CanSeePlayer()) ChangeState(GoblinState.Patrol);
     }
 
-    private void Attack() //약간 문제 있음
+
+        private void Attack()
     {
-        navMeshAgent.isStopped = true;
-        m_Animator.SetFloat("Speed", 0f); 
-        
-        if (Time.time >= nextAttackTime)
+        if (!isPreparingAttack)
         {
-            m_Animator.SetTrigger("Attack");
-            nextAttackTime = Time.time + attackCooldown;
+            navMeshAgent.isStopped = true;
+            m_Animator.SetFloat("Speed", 0f);
+            isPreparingAttack = true;
+            StartCoroutine(PrepareAttack());
         }
 
         FacePlayer();
 
         if (Vector3.Distance(transform.position, player.position) > attackRange)
         {
+            isPreparingAttack = false;
             navMeshAgent.isStopped = false;
             ChangeState(GoblinState.Chase);
         }
     }
+
+    IEnumerator PrepareAttack()
+    {
+        yield return new WaitForSeconds(attackPrepareDelay);
+
+            float distance = Vector3.Distance(transform.position, player.position);
+
+            if (currentState == GoblinState.Attack && distance <= attackRange)
+            {
+                m_Animator.SetTrigger("Attack");
+                nextAttackTime = Time.time + attackCooldown;
+            }
+
+            isPreparingAttack = false;
+    }
+
 
     public void DealDamage()
     {
@@ -172,6 +196,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
         if (weaponHandler != null)
             weaponHandler.DisableWeaponCollider();
     }
+    
+        public void OnPlayerHit()
+    {
+        Debug.Log("GoblinAI: Player has been hit!");
+        // You could also trigger a celebration animation, sound, etc.
+    }
+
 
     private void OnDrawGizmosSelected()
     {
