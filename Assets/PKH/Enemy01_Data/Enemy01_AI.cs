@@ -14,7 +14,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         Idle,
         Move,
         Attack,
-        Damage
+        Damage,
+        Die
     };
 
     private EnemyState m_state;
@@ -47,6 +48,9 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
                 break;
             case EnemyState.Damage:
                 Damage();
+                break;
+            case EnemyState.Die:
+                Die();
                 break;
         }
     }
@@ -111,11 +115,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
-
-    private void Run()
-    {
-        throw new System.NotImplementedException();
-    }
+    
     
     // 타겟이 공격 범위를 벗어나면 상태를 Move로 상태 전환
     
@@ -165,12 +165,19 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     
     // GetDamae 코드
 
-    private int hp = 3; // 초기 체력 설정
+    private int hp = 10; // 초기 체력 설정
     
     public void GetDamage(float damage)
     {
+        // 이미 상태가 Die이면 호출되지 않도록 하자
+        if (m_state == EnemyState.Die)
+        {
+            return;
+        }
+        
         // 받은 데미지만큼 체력 감소
         hp -= (int)damage;
+        currentTime = 0; // Idle 상태 타이머 리셋
         
         // 현재 체력 상태를 출력(디버깅용)
         Debug.Log($"{gameObject.name} damaged! Current HP: {hp}");
@@ -178,23 +185,44 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         // 체력이 0 이하면 죽음 처리
         if (hp <= 0)
         {
-            Die();
+            m_state = EnemyState.Die;
+            anim.SetTrigger("Die");
+            // 충돌체 정지 기능
+            cc.enabled = false;
         }
         else
         {
             // 죽지는 않았지만 피격 상태이므로 일시적으로 Idle 상태로 전환
             // 이는 "맞았을 때 행동을 멈추는" 연출로도 사용 가능
             m_state = EnemyState.Damage;
-            currentTime = 0; // Idle 상태 타이머 리셋
+            anim.SetTrigger("Damage");
         }
 
     }
-
+    
+    // 아래로 계속 내려가다가 안보이면 제거시켜주자
+    // 필요속성 : 죽을 때 속도, 사라질 위치
+    public float dieSpeed = 0.5f;
+    public float dieYPosition = -2;
     private void Die()
     { 
-        Debug.Log($"{gameObject.name} has died.");
-        Destroy(gameObject, 2f); // 적을 2초 후 삭제
+        // 일정시간 기다렸다가
+        currentTime += Time.deltaTime;
+        if (currentTime > 2)
+        {
+            // 아래로 가라앉도록 하자
+            // P = P0 + vt
+            transform.position += Vector3.down * dieSpeed * Time.deltaTime;
+            if (transform.position.y < dieYPosition)
+            {
+                Destroy(gameObject);
+            }
+
+        }
         
+
+        //Debug.Log($"{gameObject.name} has died.");
+        //Destroy(gameObject, 10f); // 적을 2초 후 삭제
     }
     
 
