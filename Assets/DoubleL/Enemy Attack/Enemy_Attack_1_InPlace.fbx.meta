@@ -62,8 +62,22 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
+      - time: 0.13563474
+        functionName: StartAutoMove
+        data: speed=5;X=0;Z=1;
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.1959059
         functionName: OnAttackStart
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.23002103
+        functionName: StopAutoMove
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

@@ -12,6 +12,6 @@ public class BossDamaged : MonoBehaviour, IEnemy
     public void GetDamage(float damage)
     {
         Debug.Log("BossDamaged");
-        bossAI.bossHp -= damage;
+        bossAI.bossCurrentHp -= damage;
     }
 }

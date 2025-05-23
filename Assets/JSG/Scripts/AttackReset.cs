@@ -12,6 +12,8 @@ public class AttackReset : StateMachineBehaviour
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         PlayerController pc = animator.GetComponent<PlayerController>();
+        animator.ResetTrigger(_triggerName);
+
         pc.DisableBehavior(PlayerController.EPlayerBehavior.Move);
         pc.DisableBehavior(PlayerController.EPlayerBehavior.Dodge);
     }
@@ -29,6 +31,7 @@ public class AttackReset : StateMachineBehaviour
     {
         animator.ResetTrigger(_triggerName);
         PlayerController pc = animator.GetComponent<PlayerController>();
+        pc.InitMove();
         pc.EnableBehavior(PlayerController.EPlayerBehavior.Move);
         pc.EnableBehavior(PlayerController.EPlayerBehavior.Dodge);
     }
