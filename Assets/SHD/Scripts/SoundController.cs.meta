@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 183a653812ba8fb48a3233ec0614190c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - audioSource: {instanceID: 0}
+  - emergenceSound: {fileID: 8300000, guid: 2e5bc025b015c8f4c93fc39f0fbb51a7, type: 3}
+  - attack_1Sound: {fileID: 8300000, guid: 779cdb5209dc36f4289e3cb69d8d015d, type: 3}
+  - attack_2Sound: {fileID: 8300000, guid: 974d85b4dcf012340bb6375f0e029353, type: 3}
+  - fireAttackSound: {fileID: 8300000, guid: f198cd06a43ff9847863501b6b40656c, type: 3}
+  - footSoundLeft: {fileID: 8300000, guid: 9ac942ff6932b85498ac675519dfb6ce, type: 3}
+  - footSoundRight: {fileID: 8300000, guid: c901b8f0945a2584a90262b2889c1b34, type: 3}
+  - deadSound: {fileID: 8300000, guid: ec1013ef2c658784dbbd6ed24431af7c, type: 3}
+  - ScreamingSound: {fileID: 8300000, guid: d8145b9d21f2f444698291ed6550f159, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

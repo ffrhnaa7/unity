@@ -1,30 +1,34 @@
 using StarterAssets;
 using UnityEngine;
+using static StarterAssets.PlayerController;
 
 public class OnGuard : StateMachineBehaviour
 {
+    public EPlayerBehavior behavior;
+
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         PlayerController pc = animator.GetComponent<PlayerController>();
-        pc.DisableBehavior(PlayerController.EPlayerBehavior.Move);
-        pc.DisableBehavior(PlayerController.EPlayerBehavior.Dodge);
-        pc.DisableBehavior(PlayerController.EPlayerBehavior.Attack);
+        pc.DisableBehavior(behavior);
+        pc.SetGuard(true);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        PlayerController pc = animator.GetComponent<PlayerController>();
+        pc.DisableBehavior(behavior);
+        pc.SetGuard(true);
+    }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         PlayerController pc = animator.GetComponent<PlayerController>();
-        pc.EnableBehavior(PlayerController.EPlayerBehavior.Move);
-        pc.EnableBehavior(PlayerController.EPlayerBehavior.Dodge);
-        pc.EnableBehavior(PlayerController.EPlayerBehavior.Attack);
+        pc.EnableBehavior(behavior);
+        pc.SetGuard(false);
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

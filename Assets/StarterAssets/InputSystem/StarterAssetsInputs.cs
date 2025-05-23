@@ -1,6 +1,7 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 #endif
 
 namespace StarterAssets
@@ -14,6 +15,9 @@ namespace StarterAssets
 		public bool sprint;
 		public bool attack;
 		public bool guard;
+		public bool debug;
+		public bool strongAttack;
+		public bool special;
 
         [Header("Movement Settings")]
 		public bool analogMovement;
@@ -58,14 +62,22 @@ namespace StarterAssets
 				AttackInput(true);
             }
         }
+
+		public void OnStrongAttack(InputAction.CallbackContext context)
+		{
+			StrongAttackInput(context.performed);
+		}
 		public void OnGuard(InputAction.CallbackContext context)
 		{
             GuardInput(context.performed);
-
-            if (context.performed)
-			{
-				//GuardInput(true);
-			}
+		}
+		public void OnDebug(InputAction.CallbackContext context)
+		{
+			DebugInput(context.performed);
+		}
+		public void OnSpecial(InputAction.CallbackContext context)
+		{
+			SpecialInput(context.performed);
 		}
 #endif
 
@@ -94,6 +106,16 @@ namespace StarterAssets
 			guard = newGuardState;
 		}
 
+		public void DebugInput(bool newDebugState)
+		{
+			debug = newDebugState;
+		}
+
+		public void SpecialInput(bool newSpecialState)
+		{
+			special = newSpecialState;
+		}
+
         private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
@@ -107,6 +129,10 @@ namespace StarterAssets
 		private void AttackInput(bool newAttackState)
 		{
 			attack = newAttackState;
+		}
+		private void StrongAttackInput(bool newStrongAttackState)
+		{
+			strongAttack = newStrongAttackState;
 		}
 	}
 	
