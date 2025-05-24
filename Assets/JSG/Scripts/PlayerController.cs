@@ -636,7 +636,10 @@ namespace StarterAssets
 
             Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
             bool live = SetHP(Mathf.Max(0, _hp - damage));
-            _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            if (shakeStrenth != Vector3.zero)
+            {
+                _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            }
             if (live)
             {
                 if (_guarding)

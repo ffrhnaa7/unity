@@ -364,6 +364,10 @@ PrefabInstance:
       propertyPath: OriginalGradient.key1.a
       value: 0.19607843
       objectReference: {fileID: 0}
+    - target: {fileID: 3632294020927878296, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d452e8cb2ad786145ae8943936d3d5ef, type: 2}
     - target: {fileID: 4794588192406108915, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
       propertyPath: m_ActionEvents.Array.size
       value: 9
