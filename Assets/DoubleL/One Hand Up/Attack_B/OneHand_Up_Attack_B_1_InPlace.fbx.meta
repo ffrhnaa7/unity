@@ -97,6 +97,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.39891562
+        functionName: PlaySound
+        data: Dodge
+        objectReferenceParameter: {fileID: 8300000, guid: e514070d5a9a1fa41b5966a192c2b009, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -172,6 +179,20 @@ ModelImporter:
         functionName: SetSwordColliderScale
         data: 
         objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0.1
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.087710835
+        functionName: PlaySound
+        data: 
+        objectReferenceParameter: {fileID: 8300000, guid: 943d0dcdd51edf8489aea394037c7f0d, type: 3}
+        floatParameter: 0.1
+        intParameter: 0
+        messageOptions: 0
+      - time: 0
+        functionName: PlaySound
+        data: 
+        objectReferenceParameter: {fileID: 8300000, guid: 0f9b2a0976333a24981672b39895a73f, type: 3}
         floatParameter: 0.1
         intParameter: 0
         messageOptions: 0

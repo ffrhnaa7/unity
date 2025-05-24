@@ -62,10 +62,17 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.35050428
+      - time: 0.34273228
         functionName: StartAutoMove
         data: speed=10;x=0;z=-1;
         objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.34964073
+        functionName: PlaySound
+        data: 
+        objectReferenceParameter: {fileID: 8300000, guid: 1041dcd43dc73fd4cabe2195406db0a2, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0

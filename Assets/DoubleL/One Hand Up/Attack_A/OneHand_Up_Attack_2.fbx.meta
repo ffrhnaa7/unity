@@ -97,6 +97,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.40228885
+        functionName: PlaySound
+        data: Dodge
+        objectReferenceParameter: {fileID: 8300000, guid: f767496ee788ef444bb4d83b31d713c3, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

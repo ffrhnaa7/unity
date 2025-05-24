@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
@@ -112,11 +113,11 @@ namespace StarterAssets
         [Flags, Serializable]
         public enum EPlayerBehavior : int
         {
-            Move    = 0b_0000_0001,
-            Dodge   = 0b_0000_0010,
+            Move = 0b_0000_0001,
+            Dodge = 0b_0000_0010,
             Damaged = 0b_0000_0100,
-            Attack  = 0b_0000_1000,
-            Guard   = 0b_0001_0000,
+            Attack = 0b_0000_1000,
+            Guard = 0b_0001_0000,
         }
         private Dictionary<string, uint> _behaviorMap = new Dictionary<string, uint>()
         {
@@ -162,6 +163,7 @@ namespace StarterAssets
         private AnimationMover _animationMover;
         private CameraShaker _cameraShaker;
         private PlayerUIController _UIController;
+        private AudioSource _audioSource;
         private const float _threshold = 0.01f;
         private Vector3 _hitShake = new Vector3(0, 0.5f, 0);
         private float _hitShakeDuration = 0.25f;
@@ -202,6 +204,8 @@ namespace StarterAssets
             _animationMover = GetComponent<AnimationMover>();
             _cameraShaker = GetComponent<CameraShaker>();
             _UIController = GetComponent<PlayerUIController>();
+            _audioSource = GetComponent<AudioSource>();
+
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -240,26 +244,26 @@ namespace StarterAssets
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed        = Animator.StringToHash("Speed");
-            _animIDGrounded     = Animator.StringToHash("Grounded");
-            _animIDJump         = Animator.StringToHash("Jump");
-            _animIDFreeFall     = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed  = Animator.StringToHash("MotionSpeed");
-            _animIDAttackTrigger= Animator.StringToHash("Attack");
+            _animIDSpeed = Animator.StringToHash("Speed");
+            _animIDGrounded = Animator.StringToHash("Grounded");
+            _animIDJump = Animator.StringToHash("Jump");
+            _animIDFreeFall = Animator.StringToHash("FreeFall");
+            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDAttackTrigger = Animator.StringToHash("Attack");
             _animIDStrongAttackTrigger = Animator.StringToHash("STAttack");
-            _animIDAttackCount  = Animator.StringToHash("AttackCount");
+            _animIDAttackCount = Animator.StringToHash("AttackCount");
             _animIDDodgeTrigger = Animator.StringToHash("Dodge");
-            _animIDGuard        = Animator.StringToHash("Guard");
-            _animIDHitWeak      = Animator.StringToHash("HitWeak");
-            _animIDDodgeAnim    = Animator.StringToHash("Dodge");
-            _animIDAnyTrigger   = Animator.StringToHash("Any");
-            _animIDDie          = Animator.StringToHash("Die");
-            _animIDGuardHit     = Animator.StringToHash("GuardHit");
-            _animIDCounter      = Animator.StringToHash("Counter");
+            _animIDGuard = Animator.StringToHash("Guard");
+            _animIDHitWeak = Animator.StringToHash("HitWeak");
+            _animIDDodgeAnim = Animator.StringToHash("Dodge");
+            _animIDAnyTrigger = Animator.StringToHash("Any");
+            _animIDDie = Animator.StringToHash("Die");
+            _animIDGuardHit = Animator.StringToHash("GuardHit");
+            _animIDCounter = Animator.StringToHash("Counter");
             _animIDCounterReady = Animator.StringToHash("CounterReady");
         }
 
-        
+
         private void GroundedCheck()
         {
             // set sphere position, with offset
@@ -444,7 +448,7 @@ namespace StarterAssets
                     _verticalVelocity = -2f;
                 }
 
-                
+
                 // Jump
                 /*if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
@@ -458,7 +462,7 @@ namespace StarterAssets
                     }
                 }*/
 
-                
+
             }
             else
             {
@@ -755,6 +759,21 @@ namespace StarterAssets
             ActiveSuperArmor(false);
             _guarding = false;
             _counterReady = false;
+        }
+
+        public void PlaySound(UnityEngine.Object SoundObject)
+        {
+            if (SoundObject is AudioClip)
+            {
+                AudioClip clip = (AudioClip)SoundObject;
+                Debug.Log(clip);
+                _audioSource.PlayOneShot(clip);
+            }
+            else
+            {
+                Debug.Log("Event's parameter SoundObject is not AudioClip");
+            }
+
         }
     }
 }
