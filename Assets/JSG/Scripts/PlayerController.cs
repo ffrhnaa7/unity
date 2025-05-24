@@ -106,6 +106,7 @@ namespace StarterAssets
         private bool _guarding = false;
         private bool _counterReady = false;
         private bool _die = false;
+        private bool _superArmor;
 
         private float _hp = 0.0f;
         [Flags, Serializable]
@@ -258,23 +259,7 @@ namespace StarterAssets
             _animIDCounterReady = Animator.StringToHash("CounterReady");
         }
 
-        private Quaternion GetFacingRotationFromInput()
-        {
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-            if (_input.move != Vector2.zero)
-            {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
-
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-            }
-
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            return Quaternion.LookRotation(targetDirection);
-        }
+        
         private void GroundedCheck()
         {
             // set sphere position, with offset
@@ -632,8 +617,16 @@ namespace StarterAssets
             else if (_counterReady)
             {
                 _counterReady = false;
+                ActiveSuperArmor(true);
                 _animator.SetTrigger(_animIDCounter);
                 return true;
+            }
+            else if (_superArmor)
+            {
+                Debug.Log("super_armor, 데미지 경감");
+                shakeStrenth = Vector3.zero;
+                shakeDuration = 0;
+                damage /= 5;
             }
             else
             {
@@ -650,7 +643,7 @@ namespace StarterAssets
                 {
                     _animator.SetTrigger(_animIDGuardHit);
                 }
-                else
+                else if (_superArmor == false)
                 {
                     _animator.SetTrigger(_animIDHitWeak);
                     _animator.SetTrigger(_animIDAnyTrigger);
@@ -726,6 +719,39 @@ namespace StarterAssets
         public void SetSwordColliderScale(float scale)
         {
             _weapon.SetSwordColliderScale(scale);
+        }
+
+        public Quaternion GetFacingRotationFromInput()
+        {
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+            if (_input.move != Vector2.zero)
+            {
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                  _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                    RotationSmoothTime);
+
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            }
+            else
+            {
+                return transform.rotation;
+            }
+
+            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            return Quaternion.LookRotation(targetDirection);
+        }
+
+        public void ActiveSuperArmor(bool superArmorState)
+        {
+            _superArmor = superArmorState;
+        }
+
+        public void InitPlayerProperties()
+        {
+            ActiveSuperArmor(false);
+            _guarding = false;
+            _counterReady = false;
         }
     }
 }
