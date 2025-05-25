@@ -147,36 +147,43 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     
     
     // 타겟이 공격 범위를 벗어나면 상태를 Move로 상태 전환
+
+    private bool isAttacking = false;
     
     // 필요속성: 공격 대기 시간
     public float attackDelayTime = 2;
     private void Attack()
     {
-        // 일정 시간에 한 번씩 공격하고 싶다.
-        currentTime += Time.deltaTime;
-        
-        if (currentTime > attackDelayTime)
+        // 공격 중이 아니면 공격 시작
+        if (!isAttacking)
         {
+            isAttacking = true;
             currentTime = 0;
             anim.SetTrigger("attack1");
-            print("공격!!!!!"); // MonoBehavior 덕분에 사용가능(로그 찍기)
-            
-            // 타겟(플레이어)에게 데미지를 주기
-            // target은 Transform이라 PlayerController가 있는지 검사
-            
-            // 일단 원에 닿으면 데미지 입는 부분을 주석처리함
-            // if (target.TryGetComponent(out PlayerController player))
-            // {
-            //     // 플레이어에게 데미지 전달
-            //     player.GetDamage(1f); // 1은 고정된 적 공격력 (원하면 변수화 가능)
-            // }
+            Debug.Log("공격!!!!!");
         }
-        
-        float distance = Vector3.Distance(transform.position, target.position);
-        if (distance > attackRange)
+
+        // 공격 도중 대기 시간 측정
+        currentTime += Time.deltaTime;
+
+        if (currentTime > attackDelayTime)
         {
-            m_state = EnemyState.Move;
-            anim.SetTrigger("Move");
+            isAttacking = false;
+
+            // 공격 종료 후 거리 검사
+            float distance = Vector3.Distance(transform.position, target.position);
+            if (distance > attackRange)
+            {
+                m_state = EnemyState.Move;
+                anim.SetTrigger("Move");
+            }
+            else
+            {
+                // 다시 공격 반복 (혹은 Idle로 전환 가능)
+                m_state = EnemyState.Attack;
+            }
+
+            currentTime = 0;
         }
     }
     

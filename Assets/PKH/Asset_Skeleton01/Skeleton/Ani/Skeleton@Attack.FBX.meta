@@ -320,17 +320,17 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.35638553
+      - time: 0.31471884
         functionName: EnableWeaponTrue
         data: 
-        objectReferenceParameter: {instanceID: 0}
+        objectReferenceParameter: {fileID: 100078, guid: 5a35c5f0a89b9654d897ccd7c8f81bd0, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.39476883
+      - time: 0.3709593
         functionName: EnableWeaponFalse
         data: 
-        objectReferenceParameter: {instanceID: 0}
+        objectReferenceParameter: {fileID: 100078, guid: 5a35c5f0a89b9654d897ccd7c8f81bd0, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
