@@ -16,7 +16,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         Move,
         Attack,
         Damage,
-        Die
+        Die,
+        Return
     };
 
     private EnemyState m_state;
@@ -27,6 +28,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     private NavMeshAgent agent;
 
+    private Vector3 originPosition;
+    
     void Start()
     {
         m_state = EnemyState.Idle;
@@ -34,10 +37,22 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        
+        originPosition = transform.position; // 💡 시작 위치 저장
     }
 
     void Update()
     {
+        
+        float playerDistance = Vector3.Distance(transform.position, target.position);
+
+        if (isPlayerDetected && playerDistance > detectRange + 1f)
+        {
+            // 플레이어가 사라짐 → 복귀 시작
+            isPlayerDetected = false;
+            m_state = EnemyState.Return;
+            anim.SetTrigger("Move"); // 이동 애니메이션
+        }
         print("현재 상태 : " + m_state);
         switch (m_state)
         {
@@ -56,9 +71,36 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             case EnemyState.Die:
                 Die();
                 break;
+            case EnemyState.Return:
+                Return();
+                break;
         }
     }
+
+    public void Return()
+    {
+        Vector3 dir = originPosition - transform.position;
+        float distance = dir.magnitude;
+
+        if (distance < 0.5f)
+        {
+            // 원위치 도달 → Idle 상태로 전환
+            m_state = EnemyState.Idle;
+
+            // 트리거 리셋 후 Idle 트리거 설정
+            anim.ResetTrigger("Move");   // 🔁 혹시 Move가 남아 있으면 방지
+            anim.SetTrigger("Idle");     // ✅ Idle 애니메이션 실행
+
+            return;
+        }
+
+        dir.y = 0;
+        dir.Normalize();
+        cc.SimpleMove(dir * speed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10 * Time.deltaTime);
+    }
     
+
     // 필요 속성: 대기 시간, 경과 시간
     public float idleDelayTime = 2;
     private float currentTime = 0;
@@ -67,14 +109,29 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         // 일정 시간이 지나면 Idle → Move로 전환
         // 1. 시간이 흘렀으니
         currentTime += Time.deltaTime;
+        
+        // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
+        float distanceToPlayer = Vector3.Distance(transform.position, target.position);
+        
         // 2. 일정 시간이 됐으니까
-        if (currentTime > idleDelayTime)
+        // currentTime > idleDelayTime(탐지 전)
+        if (distanceToPlayer < detectRange)
         {
+            isPlayerDetected = true; // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
             // 3. 상태를 Move 로 전환
             m_state = EnemyState.Move;
             // 애니메이션 상태도 Move로 전환
             anim.SetTrigger("Move");
             currentTime = 0;
+            return; // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드) 
+        }
+        
+        // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
+        // 시간 기준 이동은 제거하거나 보조용으로 유지 가능
+        if (currentTime > idleDelayTime)
+        {
+            currentTime = 0;
+            // isPlayerDetected가 false면 여전히 Idle 유지
         }
         
     }
@@ -87,6 +144,10 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     public float attackRange = 1;
     private void Move()
     {
+        // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
+        if (!isPlayerDetected)
+            return;
+        
         // 타겟 방향으로 이동하고 싶다.
         // 1. 방향이 필요
         Vector3 dir = target.position - transform.position;
@@ -118,9 +179,16 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     // Visual Debugging 을 위한 함수
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+        
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+    
+    // 플레이어를 탐지할 거리
+    public float detectRange = 10f; // 플레이어를 탐지할 거리
+    private bool isPlayerDetected = false;
     
     // Attack01 Animation 관련 Weapon Collider 사용으로 공격 타이밍 맞추기 코드
     public Enemy01Weapon weapon;
