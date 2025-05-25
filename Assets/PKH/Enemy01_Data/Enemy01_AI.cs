@@ -84,7 +84,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     public Transform target;
     
     // 필요 속성: 공격 범위
-    public float attackRange = 2;
+    public float attackRange = 1;
     private void Move()
     {
         // 타겟 방향으로 이동하고 싶다.
@@ -122,6 +122,29 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
     
+    // Attack01 Animation 관련 Weapon Collider 사용으로 공격 타이밍 맞추기 코드
+    public Enemy01Weapon weapon;
+    public void EnableWeaponTrue()
+    {
+        if (weapon != null)
+        {
+            weapon.EnableWeapon(true);
+            Debug.Log("Enable AttackCollider!");
+        }
+            
+    }
+
+    public void EnableWeaponFalse()
+    {
+        if (weapon != null)
+        {
+            weapon.EnableWeapon(false);
+            Debug.Log("Disable AttackCollider!");
+        }
+    }
+
+    
+    
     
     // 타겟이 공격 범위를 벗어나면 상태를 Move로 상태 전환
     
@@ -140,11 +163,13 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             
             // 타겟(플레이어)에게 데미지를 주기
             // target은 Transform이라 PlayerController가 있는지 검사
-            if (target.TryGetComponent(out PlayerController player))
-            {
-                // 플레이어에게 데미지 전달
-                player.GetDamage(1f); // 1은 고정된 적 공격력 (원하면 변수화 가능)
-            }
+            
+            // 일단 원에 닿으면 데미지 입는 부분을 주석처리함
+            // if (target.TryGetComponent(out PlayerController player))
+            // {
+            //     // 플레이어에게 데미지 전달
+            //     player.GetDamage(1f); // 1은 고정된 적 공격력 (원하면 변수화 가능)
+            // }
         }
         
         float distance = Vector3.Distance(transform.position, target.position);
@@ -202,6 +227,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             // 이는 "맞았을 때 행동을 멈추는" 연출로도 사용 가능
             m_state = EnemyState.Damage;
             anim.SetTrigger("Damage");
+            currentTime = 0;
         }
 
     }
