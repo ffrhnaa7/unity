@@ -5,6 +5,8 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using Cinemachine;
+using System.Collections;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -91,6 +93,8 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        public CinemachineVirtualCamera CVCamera;
+
         public ParticleSystem GuardBlockVFX;
         public ParticleSystem CounterVFX;
 
@@ -173,8 +177,9 @@ namespace StarterAssets
         private Vector3 _guardBlockShake = new Vector3(0, 0, 0.5f);
         private float _guardBlockShakeDuration = 0.5f;
         private bool _hasAnimator;
+        private bool _bossAppearing;
 
-        
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -285,6 +290,7 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            if (_bossAppearing == true) return;
             // if there is an input and camera position is not fixed
             if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
@@ -308,6 +314,8 @@ namespace StarterAssets
         {
             if (!HasBehavior(EPlayerBehavior.Move))
             {
+                _animator.SetFloat(_animIDSpeed, 0);
+                _animator.SetFloat(_animIDMotionSpeed, 0);
                 return;
             }
             // set target speed based on move speed, sprint speed and if sprint is pressed
@@ -574,7 +582,8 @@ namespace StarterAssets
         {
             if (_input.debug)
             {
-                GetDamage(1f);
+                //GetDamage(1f);
+                SprintSpeed = 35;
                 _input.debug = false;
             }
         }
@@ -782,6 +791,26 @@ namespace StarterAssets
                 Debug.Log("Event's parameter SoundObject is not AudioClip");
             }
 
+        }
+
+        public void BossAppear(in Transform BossTransform)
+        {
+            Debug.Log(BossTransform);
+            CVCamera.LookAt = BossTransform;
+            _cameraShaker.Shake(1.5f, new Vector3(.5f, .5f, 0));
+            _bossAppearing = true;
+            DisableBehavior(EPlayerBehavior.Move);
+            StartCoroutine(InitLookAt());
+        }
+
+        private IEnumerator InitLookAt()
+        {
+            const float LOOK_AT_BOSS_DURATION = 4;
+            yield return new WaitForSecondsRealtime(LOOK_AT_BOSS_DURATION); // 게임 시간이 멈춰도 영향을 안 받게
+
+            CVCamera.LookAt = null;
+            _bossAppearing = false;
+            EnableBehavior(EPlayerBehavior.Move);
         }
     }
 }

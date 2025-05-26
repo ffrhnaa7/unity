@@ -416,13 +416,59 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6351462649522452536, guid: 44d1a20164e11d74fa091236efd3b7cd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5081260663677271121}
   m_SourcePrefab: {fileID: 100100000, guid: 44d1a20164e11d74fa091236efd3b7cd, type: 3}
+--- !u!1 &571879235570306809 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6351462649522452536, guid: 44d1a20164e11d74fa091236efd3b7cd, type: 3}
+  m_PrefabInstance: {fileID: 6902703772647388865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5081260663677271121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571879235570306809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  m_LookaheadTime: 0
+  m_LookaheadSmoothing: 0
+  m_LookaheadIgnoreY: 0
+  m_HorizontalDamping: 0.5
+  m_VerticalDamping: 0.5
+  m_ScreenX: 0.5
+  m_ScreenY: 0.5
+  m_DeadZoneWidth: 0
+  m_DeadZoneHeight: 0
+  m_SoftZoneWidth: 0.2
+  m_SoftZoneHeight: 0.2
+  m_BiasX: 0
+  m_BiasY: 0
+  m_CenterOnActivate: 1
 --- !u!4 &3102758510499033753 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8413958783754568792, guid: 44d1a20164e11d74fa091236efd3b7cd, type: 3}
   m_PrefabInstance: {fileID: 6902703772647388865}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5912501379737666416 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992542544797644209, guid: 44d1a20164e11d74fa091236efd3b7cd, type: 3}
+  m_PrefabInstance: {fileID: 6902703772647388865}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7107013285128100014
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -714,6 +760,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5436217278532705071, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
+      propertyPath: CVCamera
+      value: 
+      objectReference: {fileID: 5912501379737666416}
     - target: {fileID: 5436217278532705071, guid: b9f2fcd91b823e14b88c0c59334116d2, type: 3}
       propertyPath: CounterVFX
       value: 
