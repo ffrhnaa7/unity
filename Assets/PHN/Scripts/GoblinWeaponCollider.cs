@@ -3,7 +3,15 @@ using UnityEngine;
 public class GoblinWeaponCollider : MonoBehaviour
 {
     public float damage = 10f;
-public bool hasHitPlayer = false;
+    public bool hasHitPlayer = false;
+    public float maxHitDistance = 1.5f; // Only apply damage if player is close
+
+    private Transform goblinTransform;
+
+    private void Awake()
+    {
+        goblinTransform = transform.root; // Goblin's main body
+    }
 
     private void OnEnable()
     {
@@ -12,21 +20,28 @@ public bool hasHitPlayer = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasHitPlayer) return; // Prevent multiple hits in one swing
+        if (hasHitPlayer) return;
 
         if (other.CompareTag("Player"))
         {
-            hasHitPlayer = true;
+            float distance = Vector3.Distance(goblinTransform.position, other.transform.position);
 
-            // Send damage to player
-            other.SendMessage("GetDamage", damage, SendMessageOptions.DontRequireReceiver);
+            if (distance <= maxHitDistance)
+            {
+                hasHitPlayer = true;
 
-            // Notify GoblinAI (optional)
-            GoblinAI goblin = GetComponentInParent<GoblinAI>();
-            if (goblin != null)
-                goblin.OnPlayerHit();
+                other.SendMessage("GetDamage", damage, SendMessageOptions.DontRequireReceiver);
 
-            Debug.Log("✅ Goblin hit the player!");
+                GoblinAI goblin = GetComponentInParent<GoblinAI>();
+                if (goblin != null)
+                    goblin.OnPlayerHit();
+
+                Debug.Log("✅ Goblin hit the player!");
+            }
+            else
+            {
+                Debug.Log("❌ Player too far. No damage applied.");
+            }
         }
     }
 }
