@@ -45,6 +45,11 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     void Update()
     {
+        if (m_state == EnemyState.Die)
+        {
+            Die();
+            return;
+        }
         
         float playerDistance = Vector3.Distance(transform.position, target.position);
 
@@ -55,7 +60,9 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             m_state = EnemyState.Return;
             anim.SetTrigger("Move"); // 이동 애니메이션
         }
+        
         print("현재 상태 : " + m_state);
+        
         switch (m_state)
         {
             case EnemyState.Idle:
@@ -81,25 +88,22 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     public void Return()
     {
-        Vector3 dir = originPosition - transform.position;
-        float distance = dir.magnitude;
+        if (!agent.enabled)
+            agent.enabled = true;
 
+        // NavMeshAgent 사용
+        agent.SetDestination(originPosition);
+
+        float distance = Vector3.Distance(transform.position, originPosition);
         if (distance < 0.5f)
         {
-            // 원위치 도달 → Idle 상태로 전환
+            agent.enabled = false;           // ⛔ 반드시 NavMeshAgent 끄기
+            cc.Move(Vector3.zero);           // ⛔ 이동 멈춤
             m_state = EnemyState.Idle;
 
-            // 트리거 리셋 후 Idle 트리거 설정
-            anim.ResetTrigger("Move");   // 🔁 혹시 Move가 남아 있으면 방지
-            anim.SetTrigger("Idle");     // ✅ Idle 애니메이션 실행
-            
-            return;
+            anim.ResetTrigger("Move");
+            anim.SetTrigger("Idle");
         }
-
-        dir.y = 0;
-        dir.Normalize();
-        cc.SimpleMove(dir * speed);
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10 * Time.deltaTime);
     }
     
 
@@ -108,34 +112,20 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     private float currentTime = 0;
     private void Idle()
     {
-        // 일정 시간이 지나면 Idle → Move로 전환
-        // 1. 시간이 흘렀으니
         currentTime += Time.deltaTime;
-        
-        // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
+
+        // 👁 시야 탐지 포함 시에는 시야 각도/장애물 체크 필요
         float distanceToPlayer = Vector3.Distance(transform.position, target.position);
-        
-        // 2. 일정 시간이 됐으니까
-        // currentTime > idleDelayTime(탐지 전)
+
         if (distanceToPlayer < detectRange)
         {
-            isPlayerDetected = true; // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
-            // 3. 상태를 Move 로 전환
+            isPlayerDetected = true;
             m_state = EnemyState.Move;
-            // 애니메이션 상태도 Move로 전환
+
+            agent.enabled = true;
             anim.SetTrigger("Move");
             currentTime = 0;
-            return; // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드) 
         }
-        
-        // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
-        // 시간 기준 이동은 제거하거나 보조용으로 유지 가능
-        if (currentTime > idleDelayTime)
-        {
-            currentTime = 0;
-            // isPlayerDetected가 false면 여전히 Idle 유지
-        }
-        
     }
     
     // 필요속성 : 이동속도, 타겟
