@@ -28,7 +28,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     private NavMeshAgent agent;
 
-    private Vector3 originPosition;
+    private Vector3 originPosition; // GPT
+    
     
     void Start()
     {
@@ -37,6 +38,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        agent.enabled = false;
         
         originPosition = transform.position; // 💡 시작 위치 저장
     }
@@ -90,7 +92,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             // 트리거 리셋 후 Idle 트리거 설정
             anim.ResetTrigger("Move");   // 🔁 혹시 Move가 남아 있으면 방지
             anim.SetTrigger("Idle");     // ✅ Idle 애니메이션 실행
-
+            
             return;
         }
 
@@ -147,7 +149,11 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
         if (!isPlayerDetected)
             return;
-        
+
+        if (agent.enabled == false)
+        {
+            agent.enabled = true;
+        }
         // 타겟 방향으로 이동하고 싶다.
         // 1. 방향이 필요
         Vector3 dir = target.position - transform.position;
@@ -158,22 +164,13 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         {
             m_state = EnemyState.Attack;
             currentTime = attackDelayTime;
+            // 길찾기 종료
+            agent.enabled = false;
             return;
         }
         
-        // NavMeshAgnet 설정 간 사용 안할 코드들
-        dir.y = 0; // 너무 크면 쳐다볼 때, 하늘을 바라보는 오류 수정 코드
-        dir.Normalize();
-        // 2. 이동하고 싶다.
-        // P = P0 + vt
-        cc.SimpleMove(dir * speed);
-        
-        // 이동하는 방향으로 회전하고 싶다.
-        //transform.LookAt(target);
-        //transform.forward = dir; // 부드럽게 회전은 안된다.
-        // 부드럽게 회전하는 코드
-        //transform.forward = Vector3.Lerp(transform.forward, dir, 5 * Time.deltaTime); -> 회전 오류 발생
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10*Time.deltaTime);
+        // agent를 이용한 길찾기
+        agent.destination = target.position;
     }
 
     // Visual Debugging 을 위한 함수
@@ -280,6 +277,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         {
             return;
         }
+
+        agent.enabled = false;
         
         // 받은 데미지만큼 체력 감소
         hp -= (int)damage;
