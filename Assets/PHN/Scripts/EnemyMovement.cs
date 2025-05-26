@@ -80,6 +80,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
             case GoblinState.Attack: Attack(); break;
             case GoblinState.Dead: break;
         }
+        
     }
 
     private void ChangeState(GoblinState newState)
