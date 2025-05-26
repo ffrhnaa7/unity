@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,11 +6,13 @@ using UnityEngine;
 public class WeaponController : MonoBehaviour
 {
     public GameObject Player;
+    public List<AudioClip> SlashSounds = new List<AudioClip>();
     [SerializeField]
     private TrailRenderer _trail;
     private CapsuleCollider _meleeArea;
     private HashSet<IEnemy> _damagedTargets = new HashSet<IEnemy>();
     private CameraShaker _cameraShaker;
+    private AudioSource _audioSource;
     [SerializeField]
     private float _damage = 10;
 
@@ -28,6 +31,7 @@ public class WeaponController : MonoBehaviour
         }
         _cameraShaker = Player.GetComponent<CameraShaker>();
         _meleeArea = GetComponent<CapsuleCollider>();
+        _audioSource = GetComponent<AudioSource>();
         _trail.enabled = false;
         _meleeArea.enabled = false;
     }
@@ -60,10 +64,18 @@ public class WeaponController : MonoBehaviour
             Enemy.GetDamage(_damage);
             _hitStop.DoHitStop();
             _cameraShaker.Shake(.05f, new Vector3(0.15f, 0.15f, 0));
+            PlaySlashSound();
             Invoke(nameof(ChangeTrailColorHitGradient), 0.15f);
         }
     }
 
+    private void PlaySlashSound()
+    {
+        int size = SlashSounds.Count;
+        int rand_idx = Random.Range(0, size - 1);
+        _audioSource.PlayOneShot(SlashSounds[rand_idx]);
+
+    }
     private void ChangeTrailColor(Gradient gradient)
     {
         _trail.colorGradient = gradient;

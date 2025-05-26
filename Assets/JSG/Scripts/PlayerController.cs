@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
@@ -106,16 +107,17 @@ namespace StarterAssets
         private bool _guarding = false;
         private bool _counterReady = false;
         private bool _die = false;
+        private bool _superArmor;
 
         private float _hp = 0.0f;
         [Flags, Serializable]
         public enum EPlayerBehavior : int
         {
-            Move    = 0b_0000_0001,
-            Dodge   = 0b_0000_0010,
+            Move = 0b_0000_0001,
+            Dodge = 0b_0000_0010,
             Damaged = 0b_0000_0100,
-            Attack  = 0b_0000_1000,
-            Guard   = 0b_0001_0000,
+            Attack = 0b_0000_1000,
+            Guard = 0b_0001_0000,
         }
         private Dictionary<string, uint> _behaviorMap = new Dictionary<string, uint>()
         {
@@ -161,6 +163,7 @@ namespace StarterAssets
         private AnimationMover _animationMover;
         private CameraShaker _cameraShaker;
         private PlayerUIController _UIController;
+        private AudioSource _audioSource;
         private const float _threshold = 0.01f;
         private Vector3 _hitShake = new Vector3(0, 0.5f, 0);
         private float _hitShakeDuration = 0.25f;
@@ -201,6 +204,8 @@ namespace StarterAssets
             _animationMover = GetComponent<AnimationMover>();
             _cameraShaker = GetComponent<CameraShaker>();
             _UIController = GetComponent<PlayerUIController>();
+            _audioSource = GetComponent<AudioSource>();
+
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -239,42 +244,26 @@ namespace StarterAssets
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed        = Animator.StringToHash("Speed");
-            _animIDGrounded     = Animator.StringToHash("Grounded");
-            _animIDJump         = Animator.StringToHash("Jump");
-            _animIDFreeFall     = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed  = Animator.StringToHash("MotionSpeed");
-            _animIDAttackTrigger= Animator.StringToHash("Attack");
+            _animIDSpeed = Animator.StringToHash("Speed");
+            _animIDGrounded = Animator.StringToHash("Grounded");
+            _animIDJump = Animator.StringToHash("Jump");
+            _animIDFreeFall = Animator.StringToHash("FreeFall");
+            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDAttackTrigger = Animator.StringToHash("Attack");
             _animIDStrongAttackTrigger = Animator.StringToHash("STAttack");
-            _animIDAttackCount  = Animator.StringToHash("AttackCount");
+            _animIDAttackCount = Animator.StringToHash("AttackCount");
             _animIDDodgeTrigger = Animator.StringToHash("Dodge");
-            _animIDGuard        = Animator.StringToHash("Guard");
-            _animIDHitWeak      = Animator.StringToHash("HitWeak");
-            _animIDDodgeAnim    = Animator.StringToHash("Dodge");
-            _animIDAnyTrigger   = Animator.StringToHash("Any");
-            _animIDDie          = Animator.StringToHash("Die");
-            _animIDGuardHit     = Animator.StringToHash("GuardHit");
-            _animIDCounter      = Animator.StringToHash("Counter");
+            _animIDGuard = Animator.StringToHash("Guard");
+            _animIDHitWeak = Animator.StringToHash("HitWeak");
+            _animIDDodgeAnim = Animator.StringToHash("Dodge");
+            _animIDAnyTrigger = Animator.StringToHash("Any");
+            _animIDDie = Animator.StringToHash("Die");
+            _animIDGuardHit = Animator.StringToHash("GuardHit");
+            _animIDCounter = Animator.StringToHash("Counter");
             _animIDCounterReady = Animator.StringToHash("CounterReady");
         }
 
-        private Quaternion GetFacingRotationFromInput()
-        {
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
-            if (_input.move != Vector2.zero)
-            {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
-
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-            }
-
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            return Quaternion.LookRotation(targetDirection);
-        }
         private void GroundedCheck()
         {
             // set sphere position, with offset
@@ -459,7 +448,7 @@ namespace StarterAssets
                     _verticalVelocity = -2f;
                 }
 
-                
+
                 // Jump
                 /*if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
@@ -473,7 +462,7 @@ namespace StarterAssets
                     }
                 }*/
 
-                
+
             }
             else
             {
@@ -632,8 +621,16 @@ namespace StarterAssets
             else if (_counterReady)
             {
                 _counterReady = false;
+                ActiveSuperArmor(true);
                 _animator.SetTrigger(_animIDCounter);
                 return true;
+            }
+            else if (_superArmor)
+            {
+                Debug.Log("super_armor, 데미지 경감");
+                shakeStrenth = Vector3.zero;
+                shakeDuration = 0;
+                damage /= 5;
             }
             else
             {
@@ -643,14 +640,17 @@ namespace StarterAssets
 
             Debug.Log($"GetDamage!{damage}, CurHP: {_hp}");
             bool live = SetHP(Mathf.Max(0, _hp - damage));
-            _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            if (shakeStrenth != Vector3.zero)
+            {
+                _cameraShaker.Shake(shakeDuration, shakeStrenth);
+            }
             if (live)
             {
                 if (_guarding)
                 {
                     _animator.SetTrigger(_animIDGuardHit);
                 }
-                else
+                else if (_superArmor == false)
                 {
                     _animator.SetTrigger(_animIDHitWeak);
                     _animator.SetTrigger(_animIDAnyTrigger);
@@ -726,6 +726,54 @@ namespace StarterAssets
         public void SetSwordColliderScale(float scale)
         {
             _weapon.SetSwordColliderScale(scale);
+        }
+
+        public Quaternion GetFacingRotationFromInput()
+        {
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+            if (_input.move != Vector2.zero)
+            {
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                  _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                    RotationSmoothTime);
+
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            }
+            else
+            {
+                return transform.rotation;
+            }
+
+            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            return Quaternion.LookRotation(targetDirection);
+        }
+
+        public void ActiveSuperArmor(bool superArmorState)
+        {
+            _superArmor = superArmorState;
+        }
+
+        public void InitPlayerProperties()
+        {
+            ActiveSuperArmor(false);
+            _guarding = false;
+            _counterReady = false;
+        }
+
+        public void PlaySound(UnityEngine.Object SoundObject)
+        {
+            if (SoundObject is AudioClip)
+            {
+                AudioClip clip = (AudioClip)SoundObject;
+                Debug.Log(clip);
+                _audioSource.PlayOneShot(clip);
+            }
+            else
+            {
+                Debug.Log("Event's parameter SoundObject is not AudioClip");
+            }
+
         }
     }
 }

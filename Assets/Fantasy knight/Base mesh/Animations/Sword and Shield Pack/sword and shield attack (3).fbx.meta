@@ -29,6 +29,9 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
+<<<<<<< HEAD
+    clipAnimations: []
+=======
     clipAnimations:
     - serializedVersion: 16
       name: wheel_attack
@@ -94,6 +97,7 @@ ModelImporter:
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
+>>>>>>> team/main
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -143,6 +147,10 @@ ModelImporter:
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
+<<<<<<< HEAD
+    human: []
+    skeleton: []
+=======
     human:
     - boneName: pelvis
       humanName: Hips
@@ -871,6 +879,7 @@ ModelImporter:
       position: {x: -0.22094199, y: 0, z: 0}
       rotation: {x: -0.047445532, y: -0.000021567112, z: 0.00049083965, w: 0.9988737}
       scale: {x: 1, y: 1, z: 1}
+>>>>>>> team/main
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5

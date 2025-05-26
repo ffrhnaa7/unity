@@ -45,11 +45,12 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: anim_attack_heavy_startup
+  m_Name: Counter-Start
   m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 4081464279989251312}
+  - {fileID: 1255970789125197043}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -173,10 +174,10 @@ AnimatorStateMachine:
     m_Position: {x: 240, y: 190, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5604720558349821561}
-    m_Position: {x: 490, y: 190, z: 0}
+    m_Position: {x: 490, y: 270, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7045762457073781961}
-    m_Position: {x: 750, y: 190, z: 0}
+    m_Position: {x: 750, y: 260, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -1065,6 +1066,31 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 780, y: 310, z: 0}
   m_ParentStateMachinePosition: {x: 1010, y: -40, z: 0}
   m_DefaultState: {fileID: 7172417595465410833}
+--- !u!1101 &1255970789125197043
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: Counter
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 7045762457073781961}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0
+  m_TransitionOffset: 0
+  m_ExitTime: 0.16666669
+  m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1101 &1381778882725410896
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -1592,7 +1618,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: anim_attack_heavy_idle
+  m_Name: Counter-Idle
   m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
@@ -1716,7 +1742,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: anim_attack_heavy_release
+  m_Name: Counter-Release
   m_Speed: 1.25
   m_CycleOffset: 0
   m_Transitions:

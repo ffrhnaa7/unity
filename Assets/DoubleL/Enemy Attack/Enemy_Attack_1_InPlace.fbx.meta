@@ -83,7 +83,14 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.3237126
+      - time: 0.25246412
+        functionName: PlaySound
+        data: 
+        objectReferenceParameter: {fileID: 8300000, guid: b882bf327836bbb47a95f233e915d095, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.2973968
         functionName: OnAttackEnd
         data: 
         objectReferenceParameter: {instanceID: 0}
