@@ -36,16 +36,23 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private GoblinWeaponHandler weaponHandler;
     private float attackPrepareDelay = 0.1f;
     private bool isPreparingAttack = false;
+    private AudioSource audioSource;
+    private float nextPatrolSoundTime = 0f;
 
     [SerializeField] private ParticleSystem bloodEffect;
+    [SerializeField] private AudioClip patrolSound;
+    [SerializeField] private float patrolSoundInterval = 5f;
 
     private void Awake()
     {
-       
+
         m_Animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         weaponHandler = GetComponent<GoblinWeaponHandler>();
         currentHp = maxHp;
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     private void Start() 
@@ -93,6 +100,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             navMeshAgent.SetDestination(waypoints[currentWaypointIndex].position);
         }
+
+            if (Time.time >= nextPatrolSoundTime && patrolSound != null)
+        {
+            audioSource.PlayOneShot(patrolSound);
+            nextPatrolSoundTime = Time.time + patrolSoundInterval;
+        }
+
 
         if (CanSeePlayer()) ChangeState(GoblinState.Chase); //to chase
     }
