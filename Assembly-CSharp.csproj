@@ -77,6 +77,7 @@
     <Compile Include="Assets\JSG\Scripts\HitStop.cs" />
     <Compile Include="Assets\JSG\Scripts\SG_TestEnemy.cs" />
     <Compile Include="Assets\PHN\Scripts\GoblinWeaponCollider.cs" />
+    <Compile Include="Assets\SHD\Scripts\ActivateBossTrigger.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualTouchZone.cs" />
     <Compile Include="Assets\PKH\Enemy01_Data\Enemy01Weapon.cs" />
     <Compile Include="Assets\JSG\Scripts\AnimatorDebugger.cs" />
