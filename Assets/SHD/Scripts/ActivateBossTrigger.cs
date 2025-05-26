@@ -1,11 +1,8 @@
 using UnityEngine;
 
-public class BossTrigger : MonoBehaviour
+public class ActivateBossTrigger : MonoBehaviour
 {
-    public Animator bossAnim;
-    public GameObject bossPrefab;
     public GameObject bossTrigger;
-
     private void Awake()
     {
         //gameObject.GetComponent<Renderer>().enabled = false;
@@ -13,12 +10,9 @@ public class BossTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            bossPrefab.SetActive(true);
             bossTrigger.SetActive(true);
-            bossAnim.SetTrigger("Trigger");
-            Debug.Log("Boss Appear");
             Destroy(gameObject);
         }
     }
