@@ -49,6 +49,7 @@ public class BossAI : MonoBehaviour
     {
         // 보스 위치를 시작 위치로 설정
         transform.position = StartLocation.transform.position;
+        transform.rotation = StartLocation.transform.rotation;
 
         // 공격 감지 콜라이더를 처음에는 false로 설정
         if (attackDetectCube != null)
@@ -271,7 +272,7 @@ public class BossAI : MonoBehaviour
         gameObject.SetActive(false);
 
         transform.position = EndLocation.transform.position;
-        transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+        transform.rotation = EndLocation.transform.rotation;
     }
 
     // Boss Renderer Mode = fade
