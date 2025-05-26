@@ -3,6 +3,11 @@ using UnityEngine;
 public class ActivateBossTrigger : MonoBehaviour
 {
     public GameObject bossTrigger;
+    public GameObject Rock;
+
+    public AudioSource audioSource;
+    public AudioClip audioClip;
+
     private void Awake()
     {
         //gameObject.GetComponent<Renderer>().enabled = false;
@@ -13,6 +18,9 @@ public class ActivateBossTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             bossTrigger.SetActive(true);
+            Rock.SetActive(false);
+            audioSource.clip = audioClip;
+            audioSource.Play();
             Destroy(gameObject);
         }
     }

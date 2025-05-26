@@ -59,18 +59,18 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.39f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.39f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.39f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\AspectGenerator.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\JobEntityGenerator.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\Unity.Entities.Analyzer.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.LambdaJobs.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.SystemAPI.QueryBuilder.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.SystemAPI.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.SystemAPI.Query.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.Common.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\Common.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.EntityQueryBulkOperations.dll" />
-    <Analyzer Include="C:\Users\tmdrj\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\Unity.Entities.Analyzer.CodeFixes.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\AspectGenerator.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\JobEntityGenerator.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\Unity.Entities.Analyzer.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.LambdaJobs.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.SystemAPI.QueryBuilder.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.SystemAPI.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.SystemAPI.Query.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.Common.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\Common.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\SystemGenerator.EntityQueryBulkOperations.dll" />
+    <Analyzer Include="C:\Users\mohit\Documents\GitHub\KNU_CAPSTONE_DESIGN\Library\PackageCache\com.unity.entities@1eebe0437e56\Unity.Entities\SourceGenerators\Unity.Entities.Analyzer.CodeFixes.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\JSG\Scripts\BehaviorSetting.cs" />
