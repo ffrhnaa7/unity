@@ -16,7 +16,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         Move,
         Attack,
         Damage,
-        Die
+        Die,
+        Return
     };
 
     private EnemyState m_state;
@@ -27,6 +28,12 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     private NavMeshAgent agent;
 
+    private Vector3 originPosition; // GPT
+    
+    public AudioClip dieSound;
+    private AudioSource audioSource; // 🔊
+
+    
     void Start()
     {
         m_state = EnemyState.Idle;
@@ -34,11 +41,34 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         cc = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        agent.enabled = false;
+        
+        originPosition = transform.position; // 💡 시작 위치 저장
+        
+        audioSource = GetComponent<AudioSource>(); // AudioSource 가져오기
+        
     }
 
     void Update()
     {
+        if (m_state == EnemyState.Die)
+        {
+            Die();
+            return;
+        }
+        
+        float playerDistance = Vector3.Distance(transform.position, target.position);
+
+        if (isPlayerDetected && playerDistance > detectRange + 1f)
+        {
+            // 플레이어가 사라짐 → 복귀 시작
+            isPlayerDetected = false;
+            m_state = EnemyState.Return;
+            anim.SetTrigger("Move"); // 이동 애니메이션
+        }
+        
         print("현재 상태 : " + m_state);
+        
         switch (m_state)
         {
             case EnemyState.Idle:
@@ -56,27 +86,52 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             case EnemyState.Die:
                 Die();
                 break;
+            case EnemyState.Return:
+                Return();
+                break;
+        }
+    }
+
+    public void Return()
+    {
+        if (!agent.enabled)
+            agent.enabled = true;
+
+        // NavMeshAgent 사용
+        agent.SetDestination(originPosition);
+
+        float distance = Vector3.Distance(transform.position, originPosition);
+        if (distance < 0.5f)
+        {
+            agent.enabled = false;           // ⛔ 반드시 NavMeshAgent 끄기
+            cc.Move(Vector3.zero);           // ⛔ 이동 멈춤
+            m_state = EnemyState.Idle;
+
+            anim.ResetTrigger("Move");
+            anim.SetTrigger("Idle");
         }
     }
     
+
     // 필요 속성: 대기 시간, 경과 시간
     public float idleDelayTime = 2;
     private float currentTime = 0;
     private void Idle()
     {
-        // 일정 시간이 지나면 Idle → Move로 전환
-        // 1. 시간이 흘렀으니
         currentTime += Time.deltaTime;
-        // 2. 일정 시간이 됐으니까
-        if (currentTime > idleDelayTime)
+
+        // 👁 시야 탐지 포함 시에는 시야 각도/장애물 체크 필요
+        float distanceToPlayer = Vector3.Distance(transform.position, target.position);
+
+        if (distanceToPlayer < detectRange)
         {
-            // 3. 상태를 Move 로 전환
+            isPlayerDetected = true;
             m_state = EnemyState.Move;
-            // 애니메이션 상태도 Move로 전환
+
+            agent.enabled = true;
             anim.SetTrigger("Move");
             currentTime = 0;
         }
-        
     }
     
     // 필요속성 : 이동속도, 타겟
@@ -84,9 +139,17 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
     public Transform target;
     
     // 필요 속성: 공격 범위
-    public float attackRange = 2;
+    public float attackRange = 1;
     private void Move()
     {
+        // 플레이어와의 거리 계산(탐지 후 쫓기 위한 코드)
+        if (!isPlayerDetected)
+            return;
+
+        if (agent.enabled == false)
+        {
+            agent.enabled = true;
+        }
         // 타겟 방향으로 이동하고 싶다.
         // 1. 방향이 필요
         Vector3 dir = target.position - transform.position;
@@ -97,61 +160,89 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         {
             m_state = EnemyState.Attack;
             currentTime = attackDelayTime;
+            // 길찾기 종료
+            agent.enabled = false;
             return;
         }
         
-        // NavMeshAgnet 설정 간 사용 안할 코드들
-        dir.y = 0; // 너무 크면 쳐다볼 때, 하늘을 바라보는 오류 수정 코드
-        dir.Normalize();
-        // 2. 이동하고 싶다.
-        // P = P0 + vt
-        cc.SimpleMove(dir * speed);
-        
-        // 이동하는 방향으로 회전하고 싶다.
-        //transform.LookAt(target);
-        //transform.forward = dir; // 부드럽게 회전은 안된다.
-        // 부드럽게 회전하는 코드
-        //transform.forward = Vector3.Lerp(transform.forward, dir, 5 * Time.deltaTime); -> 회전 오류 발생
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 10*Time.deltaTime);
+        // agent를 이용한 길찾기
+        agent.destination = target.position;
     }
 
     // Visual Debugging 을 위한 함수
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+        
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
     
+    // 플레이어를 탐지할 거리
+    public float detectRange = 10f; // 플레이어를 탐지할 거리
+    private bool isPlayerDetected = false;
+    
+    // Attack01 Animation 관련 Weapon Collider 사용으로 공격 타이밍 맞추기 코드
+    public Enemy01Weapon weapon;
+    public void EnableWeaponTrue()
+    {
+        if (weapon != null)
+        {
+            weapon.EnableWeapon(true);
+            Debug.Log("Enable AttackCollider!");
+        }
+            
+    }
+
+    public void EnableWeaponFalse()
+    {
+        if (weapon != null)
+        {
+            weapon.EnableWeapon(false);
+            Debug.Log("Disable AttackCollider!");
+        }
+    }
+    
     
     // 타겟이 공격 범위를 벗어나면 상태를 Move로 상태 전환
+
+    private bool isAttacking = false;
     
     // 필요속성: 공격 대기 시간
     public float attackDelayTime = 2;
     private void Attack()
     {
-        // 일정 시간에 한 번씩 공격하고 싶다.
-        currentTime += Time.deltaTime;
-        
-        if (currentTime > attackDelayTime)
+        // 공격 중이 아니면 공격 시작
+        if (!isAttacking)
         {
+            isAttacking = true;
             currentTime = 0;
             anim.SetTrigger("attack1");
-            print("공격!!!!!"); // MonoBehavior 덕분에 사용가능(로그 찍기)
-            
-            // 타겟(플레이어)에게 데미지를 주기
-            // target은 Transform이라 PlayerController가 있는지 검사
-            if (target.TryGetComponent(out PlayerController player))
-            {
-                // 플레이어에게 데미지 전달
-                player.GetDamage(1f); // 1은 고정된 적 공격력 (원하면 변수화 가능)
-            }
+            Debug.Log("공격!!!!!");
         }
-        
-        float distance = Vector3.Distance(transform.position, target.position);
-        if (distance > attackRange)
+
+        // 공격 도중 대기 시간 측정
+        currentTime += Time.deltaTime;
+
+        if (currentTime > attackDelayTime)
         {
-            m_state = EnemyState.Move;
-            anim.SetTrigger("Move");
+            isAttacking = false;
+
+            // 공격 종료 후 거리 검사
+            float distance = Vector3.Distance(transform.position, target.position);
+            if (distance > attackRange)
+            {
+                m_state = EnemyState.Move;
+                anim.SetTrigger("Move");
+            }
+            else
+            {
+                // 다시 공격 반복 (혹은 Idle로 전환 가능)
+                m_state = EnemyState.Attack;
+            }
+
+            currentTime = 0;
         }
     }
     
@@ -180,6 +271,8 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         {
             return;
         }
+
+        agent.enabled = false;
         
         // 받은 데미지만큼 체력 감소
         hp -= (int)damage;
@@ -195,6 +288,10 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             anim.SetTrigger("Die");
             // 충돌체 정지 기능
             cc.enabled = false;
+            
+            // 🔊 사운드 한 번만 재생
+            if (dieSound != null && audioSource != null)
+                audioSource.PlayOneShot(dieSound);
         }
         else
         {
@@ -202,6 +299,7 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             // 이는 "맞았을 때 행동을 멈추는" 연출로도 사용 가능
             m_state = EnemyState.Damage;
             anim.SetTrigger("Damage");
+            currentTime = 0;
         }
 
     }
