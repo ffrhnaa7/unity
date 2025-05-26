@@ -19,7 +19,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public LayerMask obstacleMask;
 
     public float patrolSpeed = 1.4f;
-    public float chaseSpeed = 3f;
+    public float chaseSpeed = 2.6f;
     public float viewRadius = 15f;
     public float viewAngle = 90f;
     public float attackRange = 0.3f;
@@ -115,7 +115,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     {
         navMeshAgent.isStopped = false;
         float speed = navMeshAgent.velocity.magnitude;
-        m_Animator.SetFloat("Speed", speed);
+        m_Animator.SetFloat("Speed", Mathf.Clamp(speed, 0, chaseSpeed));
         navMeshAgent.speed = chaseSpeed;
         navMeshAgent.SetDestination(player.position);
 
