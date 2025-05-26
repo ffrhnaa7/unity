@@ -401,11 +401,8 @@ namespace StarterAssets
                     ResetAllAnimationTrigger();
                     _animator.SetTrigger(_animIDDodgeTrigger);
                     _animator.SetTrigger(_animIDAnyTrigger);
-                    //_animator.Play(_animIDDodgeAnim);
                     DisableBehavior(EPlayerBehavior.Move);
                     _dodgeTimeoutDelta = dodgeTimeout;
-
-
                 }
                 else
                 {
@@ -573,7 +570,7 @@ namespace StarterAssets
         {
             if (_input.debug)
             {
-                GetDamage(50f);
+                GetDamage(1f);
                 _input.debug = false;
             }
         }
@@ -611,8 +608,12 @@ namespace StarterAssets
             Vector3 shakeStrenth;
             float shakeDuration;
 
+            if (_dodging)
+            {
+                return false;
+            }
             // 가드 중일땐 -> GuardBlock
-            if (_guarding)
+            else if (_guarding)
             {
                 damage /= 10;
                 shakeStrenth = _guardBlockShake;
@@ -654,6 +655,7 @@ namespace StarterAssets
                 {
                     _animator.SetTrigger(_animIDHitWeak);
                     _animator.SetTrigger(_animIDAnyTrigger);
+                    _superArmor = true;
                 }
             }
             return true;
@@ -766,7 +768,6 @@ namespace StarterAssets
             if (SoundObject is AudioClip)
             {
                 AudioClip clip = (AudioClip)SoundObject;
-                Debug.Log(clip);
                 _audioSource.PlayOneShot(clip);
             }
             else
