@@ -115,7 +115,14 @@ ModelImporter:
           preInfinity: 2
           postInfinity: 2
           rotationOrder: 4
-      events: []
+      events:
+      - time: 0.26062393
+        functionName: PlaySound
+        data: 
+        objectReferenceParameter: {fileID: 8300000, guid: aa11cc08d356cfd4fbfd4289d73c61e7, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
