@@ -18,6 +18,7 @@ public class WeaponController : MonoBehaviour
 
     public Gradient OriginalGradient;
     public Gradient HitGradient;
+    public GameObject AttackHitVFXObject;
 
     private HitStop _hitStop;
     private void Awake()
@@ -65,6 +66,9 @@ public class WeaponController : MonoBehaviour
             _hitStop.DoHitStop();
             _cameraShaker.Shake(.05f, new Vector3(0.15f, 0.15f, 0));
             PlaySlashSound();
+            GameObject hitVFXObject = Instantiate(AttackHitVFXObject, transform);
+            ParticleSystem hitVFX = hitVFXObject.GetComponent<ParticleSystem>();
+            hitVFX.Play();
             Invoke(nameof(ChangeTrailColorHitGradient), 0.15f);
         }
     }
