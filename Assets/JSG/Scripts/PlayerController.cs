@@ -583,7 +583,7 @@ namespace StarterAssets
             if (_input.debug)
             {
                 //GetDamage(1f);
-                SprintSpeed = 35;
+                SprintSpeed = 50;
                 _input.debug = false;
             }
         }
