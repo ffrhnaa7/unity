@@ -91,6 +91,9 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        public ParticleSystem GuardBlockVFX;
+        public ParticleSystem CounterVFX;
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -171,6 +174,7 @@ namespace StarterAssets
         private float _guardBlockShakeDuration = 0.5f;
         private bool _hasAnimator;
 
+        
         private bool IsCurrentDeviceMouse
         {
             get
@@ -618,12 +622,15 @@ namespace StarterAssets
                 damage /= 10;
                 shakeStrenth = _guardBlockShake;
                 shakeDuration = _guardBlockShakeDuration;
+                Debug.Log("_guarding");
+                GuardBlockVFX.Play();
             }
             else if (_counterReady)
             {
                 _counterReady = false;
                 ActiveSuperArmor(true);
                 _animator.SetTrigger(_animIDCounter);
+                CounterVFX.Play();
                 return true;
             }
             else if (_superArmor)
