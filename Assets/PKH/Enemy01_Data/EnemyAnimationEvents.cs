@@ -12,4 +12,15 @@ public class EnemyAnimationEvents : MonoBehaviour
     public void EnableWeaponFalse() {
         if (enemyAI != null) enemyAI.EnableWeaponFalse();
     }
+    
+    public AudioSource audioSource;
+    public AudioClip attackSound;
+
+    public void PlayAttackSound()
+    {
+        if (audioSource != null && attackSound != null)
+        {
+            audioSource.PlayOneShot(attackSound);
+        }
+    }
 }

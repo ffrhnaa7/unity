@@ -30,6 +30,9 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
 
     private Vector3 originPosition; // GPT
     
+    public AudioClip dieSound;
+    private AudioSource audioSource; // 🔊
+
     
     void Start()
     {
@@ -41,6 +44,9 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         agent.enabled = false;
         
         originPosition = transform.position; // 💡 시작 위치 저장
+        
+        audioSource = GetComponent<AudioSource>(); // AudioSource 가져오기
+        
     }
 
     void Update()
@@ -197,8 +203,6 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             Debug.Log("Disable AttackCollider!");
         }
     }
-
-    
     
     
     // 타겟이 공격 범위를 벗어나면 상태를 Move로 상태 전환
@@ -284,6 +288,10 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
             anim.SetTrigger("Die");
             // 충돌체 정지 기능
             cc.enabled = false;
+            
+            // 🔊 사운드 한 번만 재생
+            if (dieSound != null && audioSource != null)
+                audioSource.PlayOneShot(dieSound);
         }
         else
         {
