@@ -584,6 +584,7 @@ namespace StarterAssets
             {
                 //GetDamage(1f);
                 SprintSpeed = 50;
+                Heal(10);
                 _input.debug = false;
             }
         }
@@ -811,6 +812,11 @@ namespace StarterAssets
             CVCamera.LookAt = null;
             _bossAppearing = false;
             EnableBehavior(EPlayerBehavior.Move);
+        }
+
+        public void Heal(float healAmount = 10f)
+        {
+            SetHP(Mathf.Min(_hp + healAmount, MaxHP));
         }
     }
 }
