@@ -1366,6 +1366,7 @@ MonoBehaviour:
   bossAnim: {fileID: 95397137802555603}
   bossPrefab: {fileID: 1230210362695001}
   bossTrigger: {fileID: 1563188511}
+  bossTransform: {fileID: 5891428759646129382}
 --- !u!1 &1563188511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1752,6 +1753,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossTrigger: {fileID: 1454933511}
+  Rock: {fileID: 0}
+  audioSource: {fileID: 0}
+  audioClip: {fileID: 0}
 --- !u!1 &1230210362695001 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3428728175809014669, guid: 114ca94547e84804e852fc12605b8f04, type: 3}
@@ -1812,7 +1816,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3428728175809014669, guid: 114ca94547e84804e852fc12605b8f04, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6018758551972863730, guid: 114ca94547e84804e852fc12605b8f04, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1859,6 +1863,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 114ca94547e84804e852fc12605b8f04, type: 3}
+--- !u!4 &5891428759646129382 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7253435787586472116, guid: 114ca94547e84804e852fc12605b8f04, type: 3}
+  m_PrefabInstance: {fileID: 5891428759646129381}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

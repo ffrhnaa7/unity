@@ -328,6 +328,7 @@ MonoBehaviour:
   bossAnim: {fileID: 1909619526}
   bossPrefab: {fileID: 1909619522}
   bossTrigger: {fileID: 956612643}
+  bossTransform: {fileID: 1819619749}
 --- !u!65 &269612129
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2777,6 +2778,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4072993402720666, guid: 49561c9ced9a8a14a9aa40be4dd8248c, type: 3}
   m_PrefabInstance: {fileID: 1771486480}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1819619749 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4770421700522556, guid: ffcb354c95e48bc44acdf2492834e701, type: 3}
+  m_PrefabInstance: {fileID: 1909619521}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1867227837
 GameObject:
