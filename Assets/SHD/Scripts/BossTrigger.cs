@@ -24,7 +24,7 @@ public class BossTrigger : MonoBehaviour
             Destroy(gameObject);
 
             // add by ½Â°Ç
-            PlayerController pc = GetComponent<PlayerController>();
+            PlayerController pc = other.GetComponent<PlayerController>();
             pc.BossAppear(bossTransform);
             //
         }
