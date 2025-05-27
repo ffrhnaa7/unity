@@ -22,11 +22,11 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public float chaseSpeed = 2.6f;
     public float viewRadius = 15f;
     public float viewAngle = 90f;
-    public float attackRange = 0.3f;
+    public float attackRange = 0.2f;
     public float maxHp = 100f;
     public float attackDamage = 10f;
 
-    private float attackCooldown = 4f;
+    private float attackCooldown = 4.5f;
     private float nextAttackTime = 0f;
     private GoblinState currentState;
     private int currentWaypointIndex = 0;
@@ -34,7 +34,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private float currentHp;
     private bool isDead = false;
     private GoblinWeaponHandler weaponHandler;
-    private float attackPrepareDelay = 0.1f;
+    private float attackPrepareDelay = 0.2f;
     private bool isPreparingAttack = false;
     private AudioSource audioSource;
     private float nextPatrolSoundTime = 0f;
@@ -45,7 +45,6 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
     private void Awake()
     {
-
         m_Animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         weaponHandler = GetComponent<GoblinWeaponHandler>();
@@ -55,7 +54,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         audioSource = gameObject.AddComponent<AudioSource>();
     }
 
-    private void Start() 
+    private void Start() //as soon game begins
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
@@ -89,7 +88,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         currentState = newState;
     }
 
-    private void Patrol()
+    private void Patrol() //patrol
     {
         m_Animator.SetFloat("Speed", navMeshAgent.velocity.magnitude);
         navMeshAgent.speed = patrolSpeed; //set speed under navMash
@@ -102,7 +101,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
             navMeshAgent.SetDestination(waypoints[currentWaypointIndex].position);
         }
 
-            if (Time.time >= nextPatrolSoundTime && patrolSound != null)
+        if (Time.time >= nextPatrolSoundTime && patrolSound != null)
         {
             audioSource.PlayOneShot(patrolSound);
             nextPatrolSoundTime = Time.time + patrolSoundInterval;
@@ -112,7 +111,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         if (CanSeePlayer()) ChangeState(GoblinState.Chase); //to chase
     }
 
-   private void Chase()
+   private void Chase() //to chase
     {
         navMeshAgent.isStopped = false;
         float speed = navMeshAgent.velocity.magnitude;
@@ -126,7 +125,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     }
 
 
-        private void Attack()
+    private void Attack()  //attack
     {
         if (!isPreparingAttack)
         {
@@ -146,7 +145,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         }
     }
 
-    IEnumerator PrepareAttack()
+    IEnumerator PrepareAttack() //gap time before attacl
     {
         yield return new WaitForSeconds(attackPrepareDelay);
 
@@ -155,14 +154,14 @@ public class GoblinAI : MonoBehaviour, IEnemy
             if (currentState == GoblinState.Attack && distance <= attackRange)
             {
                 m_Animator.SetTrigger("Attack");
-                nextAttackTime = Time.time + attackCooldown;
+                nextAttackTime = Time.time + attackCooldown; //***
             }
 
             isPreparingAttack = false;
     }
 
 
-    public void DealDamage()
+    public void DealDamage() //to player's side
     {
         if (player != null && Vector3.Distance(transform.position, player.position) <= attackRange + 0.5f)
         {
@@ -170,7 +169,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         }
     }
 
-    private void FacePlayer()
+    private void FacePlayer() //ensure it faces player when attack
     {
         Vector3 direction = (player.position - transform.position).normalized;
         if (direction != Vector3.zero)
@@ -183,16 +182,16 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private bool CanSeePlayer()
     {
         float d = Vector3.Distance(transform.position, player.position);
-        if (d > viewRadius) return false;
+        if (d > viewRadius) return false; //what was this.
 
         Vector3 dir = (player.position - transform.position).normalized;
         float a = Vector3.Angle(transform.forward, dir);
-        if (a > viewAngle / 2) return false;
+        if (a > viewAngle / 2) return false; //this?
 
         Vector3 origin = transform.position + Vector3.up * 1f;
         if (Physics.Raycast(origin, dir, out RaycastHit hit, viewRadius, obstacleMask))
         {
-            Debug.Log($"🚧 View blocked by {hit.collider.name}");
+            Debug.Log($"🚧 View blocked by {hit.collider.name}"); //debug on why or what decides 'being blocked'
             return false;
         }
 
@@ -212,14 +211,14 @@ public class GoblinAI : MonoBehaviour, IEnemy
             weaponHandler.DisableWeaponCollider();
     }
     
-        public void OnPlayerHit()
+        public void OnPlayerHit() //after attack 
     {
         Debug.Log("GoblinAI: Player has been hit!");
-        // You could also trigger a celebration animation, sound, etc.
+        // add excited roar sound
     }
 
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected() //for checking 
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, viewRadius);
@@ -232,13 +231,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
         Gizmos.DrawLine(transform.position, transform.position + rightRay * viewRadius);
     }
 
-    private Vector3 DirFromAngle(float angle)
+    private Vector3 DirFromAngle(float angle) // what was this...
     {
         angle += transform.eulerAngles.y;
         return new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
     }
 
-    public void GetDamage(float damage)
+    public void GetDamage(float damage) //for HP health
 {
     if (isDead) return;
 
@@ -248,15 +247,14 @@ public class GoblinAI : MonoBehaviour, IEnemy
     if (bloodEffect != null)
         bloodEffect.Play();
 
-    // 🔁 Knockback logic here
     Vector3 knockbackDir = (transform.position - player.position).normalized;
-    navMeshAgent.Move(knockbackDir * 0.5f); // Push back slightly
+    navMeshAgent.Move(knockbackDir * 0.5f); // push back
 
     if (currentHp <= 0) Die();
 }
 
 
-    private void EnableRagdoll(bool active)
+    private void EnableRagdoll(bool active) //die
     {
         foreach (Rigidbody rb in GetComponentsInChildren<Rigidbody>())
             rb.isKinematic = !active;
@@ -270,8 +268,10 @@ public class GoblinAI : MonoBehaviour, IEnemy
         GetComponent<Animator>().enabled = !active;
     }
 
-    private void Die()
+    private void Die() //die 
     {
+        //even after dying how can i make it reappear again but randomly (within the nav space (not using waypoints))
+        //also how to add UI 'you have defeated to goblin,move ahead!'
         ChangeState(GoblinState.Dead);
         navMeshAgent.isStopped = true;
         navMeshAgent.enabled = false;

@@ -185,7 +185,7 @@ MonoBehaviour:
   m_Animator: {fileID: 257084012}
   waypoints:
   - {fileID: 965874679}
-  - {fileID: 1841760511}
+  - {fileID: 1234303224}
   playerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -194,9 +194,9 @@ MonoBehaviour:
     m_Bits: 128
   patrolSpeed: 2
   chaseSpeed: 3.5
-  viewRadius: 15
+  viewRadius: 3
   viewAngle: 90
-  attackRange: 2.5
+  attackRange: 1.5
   maxHp: 100
   attackDamage: 10
   bloodEffect: {fileID: 1212763330}
@@ -547,7 +547,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400042, guid: ed1f8609fea7f9348b92206e3d12581e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.573
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 400042, guid: ed1f8609fea7f9348b92206e3d12581e, type: 3}
       propertyPath: m_LocalPosition.z
