@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using StarterAssets;
 
 public enum GoblinState //finite state machine concept
 {
@@ -51,7 +52,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         currentHp = maxHp;
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
-        audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     private void Start() //as soon game begins
@@ -70,7 +71,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     {
         if (isDead || player == null) return;
         if (m_Animator.applyRootMotion && navMeshAgent.enabled)
-    navMeshAgent.velocity = Vector3.zero;
+            navMeshAgent.velocity = Vector3.zero;
 
         switch (currentState)
         {
@@ -79,7 +80,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
             case GoblinState.Attack: Attack(); break;
             case GoblinState.Dead: break;
         }
-        
+
     }
 
     private void ChangeState(GoblinState newState)
@@ -111,7 +112,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         if (CanSeePlayer()) ChangeState(GoblinState.Chase); //to chase
     }
 
-   private void Chase() //to chase
+    private void Chase() //to chase
     {
         navMeshAgent.isStopped = false;
         float speed = navMeshAgent.velocity.magnitude;
@@ -149,15 +150,15 @@ public class GoblinAI : MonoBehaviour, IEnemy
     {
         yield return new WaitForSeconds(attackPrepareDelay);
 
-            float distance = Vector3.Distance(transform.position, player.position);
+        float distance = Vector3.Distance(transform.position, player.position);
 
-            if (currentState == GoblinState.Attack && distance <= attackRange)
-            {
-                m_Animator.SetTrigger("Attack");
-                nextAttackTime = Time.time + attackCooldown; //***
-            }
+        if (currentState == GoblinState.Attack && distance <= attackRange)
+        {
+            m_Animator.SetTrigger("Attack");
+            nextAttackTime = Time.time + attackCooldown; //***
+        }
 
-            isPreparingAttack = false;
+        isPreparingAttack = false;
     }
 
 
@@ -210,8 +211,8 @@ public class GoblinAI : MonoBehaviour, IEnemy
         if (weaponHandler != null)
             weaponHandler.DisableWeaponCollider();
     }
-    
-        public void OnPlayerHit() //after attack 
+
+    public void OnPlayerHit() //after attack 
     {
         Debug.Log("GoblinAI: Player has been hit!");
         // add excited roar sound
@@ -238,20 +239,20 @@ public class GoblinAI : MonoBehaviour, IEnemy
     }
 
     public void GetDamage(float damage) //for HP health
-{
-    if (isDead) return;
+    {
+        if (isDead) return;
 
-    currentHp -= damage;
-    Debug.Log($"🩸 Goblin took {damage} damage. Remaining HP: {currentHp}");
-    
-    if (bloodEffect != null)
-        bloodEffect.Play();
+        currentHp -= damage;
+        Debug.Log($"🩸 Goblin took {damage} damage. Remaining HP: {currentHp}");
 
-    Vector3 knockbackDir = (transform.position - player.position).normalized;
-    navMeshAgent.Move(knockbackDir * 0.5f); // push back
+        if (bloodEffect != null)
+            bloodEffect.Play();
 
-    if (currentHp <= 0) Die();
-}
+        Vector3 knockbackDir = (transform.position - player.position).normalized;
+        navMeshAgent.Move(knockbackDir * 0.5f); // push back
+
+        if (currentHp <= 0) Die();
+    }
 
 
     private void EnableRagdoll(bool active) //die
@@ -280,6 +281,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
         EnableRagdoll(true);
 
         GetComponent<Collider>().enabled = false;
+
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            playerObj.GetComponent<PlayerController>().Heal(10f); 
+        }
         Destroy(gameObject, 5f);
     }
+   
 }
