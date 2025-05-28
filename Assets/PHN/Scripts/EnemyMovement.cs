@@ -27,7 +27,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public float maxHp = 100f;
     public float attackDamage = 10f;
 
-    private float attackCooldown = 4.5f;
+    private float attackCooldown = 1.5f;
     private float nextAttackTime = 0f;
     private GoblinState currentState;
     private int currentWaypointIndex = 0;
@@ -35,13 +35,16 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private float currentHp;
     private bool isDead = false;
     private GoblinWeaponHandler weaponHandler;
-    private float attackPrepareDelay = 0.2f;
+    private float attackPrepareDelay = 0.1f;
     private bool isPreparingAttack = false;
     private AudioSource audioSource;
     private float nextPatrolSoundTime = 0f;
 
     [SerializeField] private ParticleSystem bloodEffect;
     [SerializeField] private AudioClip patrolSound;
+    [SerializeField] private AudioClip hitSound;
+    [SerializeField] private GameObject surpriseIcon;
+    [SerializeField] private float iconDisplayDuration = 1.5f;
     [SerializeField] private float patrolSoundInterval = 5f;
 
     private void Awake()
@@ -53,6 +56,10 @@ public class GoblinAI : MonoBehaviour, IEnemy
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
+        //audioSource.volume = 0.3f;
+            
+        if (surpriseIcon != null)
+            surpriseIcon.SetActive(false);
     }
 
     private void Start() //as soon game begins
@@ -71,7 +78,10 @@ public class GoblinAI : MonoBehaviour, IEnemy
     {
         if (isDead || player == null) return;
         if (m_Animator.applyRootMotion && navMeshAgent.enabled)
+        {
+            navMeshAgent.ResetPath(); // prevent further movement
             navMeshAgent.velocity = Vector3.zero;
+        }
 
         switch (currentState)
         {
@@ -89,6 +99,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         currentState = newState;
     }
 
+//--------------patrol section---------------------------------------------------------------
     private void Patrol() //patrol
     {
         m_Animator.SetFloat("Speed", navMeshAgent.velocity.magnitude);
@@ -104,14 +115,14 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
         if (Time.time >= nextPatrolSoundTime && patrolSound != null)
         {
+            audioSource.pitch = Random.Range(0.95f, 1.05f);
             audioSource.PlayOneShot(patrolSound);
             nextPatrolSoundTime = Time.time + patrolSoundInterval;
         }
 
-
         if (CanSeePlayer()) ChangeState(GoblinState.Chase); //to chase
     }
-
+//--------------chase section---------------------------------------------------------------
     private void Chase() //to chase
     {
         navMeshAgent.isStopped = false;
@@ -125,7 +136,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         else if (!CanSeePlayer()) ChangeState(GoblinState.Patrol);
     }
 
-
+//--------------attack section---------------------------------------------------------------
     private void Attack()  //attack
     {
         if (!isPreparingAttack)
@@ -142,6 +153,8 @@ public class GoblinAI : MonoBehaviour, IEnemy
         {
             isPreparingAttack = false;
             navMeshAgent.isStopped = false;
+
+            m_Animator.ResetTrigger("Attack"); 
             ChangeState(GoblinState.Chase);
         }
     }
@@ -149,15 +162,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
     IEnumerator PrepareAttack() //gap time before attacl
     {
         yield return new WaitForSeconds(attackPrepareDelay);
-
         float distance = Vector3.Distance(transform.position, player.position);
 
         if (currentState == GoblinState.Attack && distance <= attackRange)
         {
             m_Animator.SetTrigger("Attack");
-            nextAttackTime = Time.time + attackCooldown; //***
+            nextAttackTime = Time.time + attackCooldown; 
         }
-
         isPreparingAttack = false;
     }
 
@@ -169,7 +180,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
             player.SendMessage("GetDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
         }
     }
-
+//--------------direction when saw player section---------------------------------------------------------------
     private void FacePlayer() //ensure it faces player when attack
     {
         Vector3 direction = (player.position - transform.position).normalized;
@@ -179,7 +190,20 @@ public class GoblinAI : MonoBehaviour, IEnemy
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }
     }
+//--------------surprised effect---------------------------------------------------------------
+    public void ShowSurpriseIcon()
+    {
+        if (surpriseIcon != null)
+            StartCoroutine(FlashSurpriseIcon());
+    }
 
+    private IEnumerator FlashSurpriseIcon()
+    {
+        surpriseIcon.SetActive(true);
+        yield return new WaitForSeconds(iconDisplayDuration);
+        surpriseIcon.SetActive(false);
+    }
+//--------------find player section---------------------------------------------------------------
     private bool CanSeePlayer()
     {
         float d = Vector3.Distance(transform.position, player.position);
@@ -199,7 +223,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         Debug.Log("✅ Goblin sees the player!");
         return true;
     }
-
+//--------------weapon section---------------------------------------------------------------
     public void OnAttackStart()
     {
         if (weaponHandler != null)
@@ -215,9 +239,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public void OnPlayerHit() //after attack 
     {
         Debug.Log("GoblinAI: Player has been hit!");
-        // add excited roar sound
+             if (hitSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hitSound);
+        } 
+       
     }
-
+//--------------death section---------------------------------------------------------------
 
     private void OnDrawGizmosSelected() //for checking 
     {
@@ -232,7 +260,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
         Gizmos.DrawLine(transform.position, transform.position + rightRay * viewRadius);
     }
 
-    private Vector3 DirFromAngle(float angle) // what was this...
+    private Vector3 DirFromAngle(float angle) // fov in 3d space
     {
         angle += transform.eulerAngles.y;
         return new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
@@ -250,6 +278,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
         Vector3 knockbackDir = (transform.position - player.position).normalized;
         navMeshAgent.Move(knockbackDir * 0.5f); // push back
+
+        if (currentState == GoblinState.Patrol)
+        {
+            ShowSurpriseIcon();
+            Debug.Log("⚠️ Goblin: Surprised by attack!");
+            ChangeState(GoblinState.Chase);
+        }
 
         if (currentHp <= 0) Die();
     }
@@ -285,9 +320,10 @@ public class GoblinAI : MonoBehaviour, IEnemy
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
-            playerObj.GetComponent<PlayerController>().Heal(10f); 
+            playerObj.GetComponent<PlayerController>().Heal(10f);
         }
         Destroy(gameObject, 5f);
+        
     }
    
 }
