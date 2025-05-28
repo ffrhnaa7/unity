@@ -123,3 +123,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   hasHitPlayer: 0
+  maxHitDistance: 1.5
