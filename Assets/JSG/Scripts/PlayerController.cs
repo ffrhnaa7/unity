@@ -125,6 +125,7 @@ namespace StarterAssets
             Damaged = 0b_0000_0100,
             Attack = 0b_0000_1000,
             Guard = 0b_0001_0000,
+            ALL = -1
         }
         private Dictionary<string, uint> _behaviorMap = new Dictionary<string, uint>()
         {
@@ -393,10 +394,12 @@ namespace StarterAssets
                 {
                     transform.rotation = GetFacingRotationFromInput();
                     _animator.SetBool(_animIDGuard, true);
+                    _guarding = true;
                 }
                 else if (_input.guard == false)
                 {
                     _animator.SetBool(_animIDGuard, false);
+                    _guarding = false;
 
                 }
             }
@@ -582,7 +585,7 @@ namespace StarterAssets
         {
             if (_input.debug)
             {
-                //GetDamage(1f);
+                GetDamage(1f);
                 SprintSpeed = 50;
                 Heal(10);
                 _input.debug = false;
@@ -778,6 +781,7 @@ namespace StarterAssets
             ActiveSuperArmor(false);
             _guarding = false;
             _counterReady = false;
+            EnableBehavior(EPlayerBehavior.ALL);
         }
 
         public void PlaySound(UnityEngine.Object SoundObject)
