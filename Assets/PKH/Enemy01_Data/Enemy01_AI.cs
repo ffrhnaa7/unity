@@ -314,6 +314,15 @@ public class Enemy01_AI : MonoBehaviour, IEnemy
         currentTime += Time.deltaTime;
         if (currentTime > 2)
         {
+            GameObject playerObj = GameObject.FindWithTag("Player"); // 또는 직접 할당
+            if (playerObj != null)
+            {
+                PlayerController player = playerObj.GetComponent<PlayerController>();
+                if (player != null)
+                {
+                    player.Heal(); // ✅ 회복 호출
+                }
+            }
             // 아래로 가라앉도록 하자
             // P = P0 + vt
             transform.position += Vector3.down * dieSpeed * Time.deltaTime;

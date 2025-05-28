@@ -8,7 +8,7 @@ public class Enemy01Weapon : MonoBehaviour
         GetComponent<Collider>().enabled = false;
     }
     // 적 Enemy01 Weapon에 닿으면 플레이어가 공격 당하도록 하는 코드
-    public float damage = 1f;
+    public float damage = 10f;
     
     private void OnTriggerEnter(Collider other)
     {
