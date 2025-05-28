@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Assets\JSG\Scripts\BehaviorSetting.cs" />
     <Compile Include="Assets\JSG\Scripts\HitStop.cs" />
+    <Compile Include="Assets\PHN\Scripts\GoblinLocation.cs" />
     <Compile Include="Assets\JSG\Scripts\SG_TestEnemy.cs" />
     <Compile Include="Assets\PHN\Scripts\GoblinWeaponCollider.cs" />
     <Compile Include="Assets\SHD\Scripts\ActivateBossTrigger.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\JSG\Scripts\BehaviorTimeOut.cs" />
     <Compile Include="Assets\JSG\Scripts\InitAnimationEvent.cs" />
+    <Compile Include="Assets\PHN\Assets\TeKniKo_Free\Power_Ups\Scripts\ObjectBounce.cs" />
     <Compile Include="Assets\JSG\Scripts\SetForwardByInputOnEnter.cs" />
     <Compile Include="Assets\JSG\Scripts\OnGuard.cs" />
     <Compile Include="Assets\JSG\Scripts\AttackReset.cs" />
