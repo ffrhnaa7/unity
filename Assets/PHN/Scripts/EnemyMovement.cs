@@ -27,7 +27,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public float maxHp = 100f;
     public float attackDamage = 10f;
 
-    private float attackCooldown = 2f;
+    private float attackCooldown = 1.5f;
     private float nextAttackTime = 0f;
     private GoblinState currentState;
     private int currentWaypointIndex = 0;
@@ -35,7 +35,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private float currentHp;
     private bool isDead = false;
     private GoblinWeaponHandler weaponHandler;
-    private float attackPrepareDelay = 0.2f;
+    private float attackPrepareDelay = 0.1f;
     private bool isPreparingAttack = false;
     private AudioSource audioSource;
     private float nextPatrolSoundTime = 0f;
@@ -43,7 +43,8 @@ public class GoblinAI : MonoBehaviour, IEnemy
     [SerializeField] private ParticleSystem bloodEffect;
     [SerializeField] private AudioClip patrolSound;
     [SerializeField] private AudioClip hitSound;
-
+    [SerializeField] private GameObject surpriseIcon;
+    [SerializeField] private float iconDisplayDuration = 1.5f;
     [SerializeField] private float patrolSoundInterval = 5f;
 
     private void Awake()
@@ -55,6 +56,10 @@ public class GoblinAI : MonoBehaviour, IEnemy
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
+        //audioSource.volume = 0.3f;
+            
+        if (surpriseIcon != null)
+            surpriseIcon.SetActive(false);
     }
 
     private void Start() //as soon game begins
@@ -185,6 +190,19 @@ public class GoblinAI : MonoBehaviour, IEnemy
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }
     }
+//--------------surprised effect---------------------------------------------------------------
+    public void ShowSurpriseIcon()
+    {
+        if (surpriseIcon != null)
+            StartCoroutine(FlashSurpriseIcon());
+    }
+
+    private IEnumerator FlashSurpriseIcon()
+    {
+        surpriseIcon.SetActive(true);
+        yield return new WaitForSeconds(iconDisplayDuration);
+        surpriseIcon.SetActive(false);
+    }
 //--------------find player section---------------------------------------------------------------
     private bool CanSeePlayer()
     {
@@ -225,7 +243,6 @@ public class GoblinAI : MonoBehaviour, IEnemy
         {
             audioSource.PlayOneShot(hitSound);
         } 
-
        
     }
 //--------------death section---------------------------------------------------------------
@@ -261,6 +278,13 @@ public class GoblinAI : MonoBehaviour, IEnemy
 
         Vector3 knockbackDir = (transform.position - player.position).normalized;
         navMeshAgent.Move(knockbackDir * 0.5f); // push back
+
+        if (currentState == GoblinState.Patrol)
+        {
+            ShowSurpriseIcon();
+            Debug.Log("⚠️ Goblin: Surprised by attack!");
+            ChangeState(GoblinState.Chase);
+        }
 
         if (currentHp <= 0) Die();
     }
