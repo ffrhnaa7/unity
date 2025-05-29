@@ -22,12 +22,12 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public float patrolSpeed = 1.4f;
     public float chaseSpeed = 2.6f;
     public float viewRadius = 15f;
-    public float viewAngle = 90f;
-    public float attackRange = 0.2f;
+    public float viewAngle = 100f;
+    public float attackRange = 2.5f;
     public float maxHp = 30f;
     public float attackDamage = 10f;
 
-    private float attackCooldown = 1.5f;
+    private float attackCooldown = 0.1f;
     private float nextAttackTime = 0f;
     private GoblinState currentState;
     private int currentWaypointIndex = 0;

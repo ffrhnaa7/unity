@@ -5057,9 +5057,9 @@ MonoBehaviour:
     m_Bits: 128
   patrolSpeed: 2
   chaseSpeed: 3.5
-  viewRadius: 3
-  viewAngle: 90
-  attackRange: 1.5
+  viewRadius: 15
+  viewAngle: 100
+  attackRange: 2.5
   maxHp: 30
   attackDamage: 10
   bloodEffect: {fileID: 3323449419369306007}
