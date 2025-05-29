@@ -24,7 +24,7 @@ public class GoblinAI : MonoBehaviour, IEnemy
     public float viewRadius = 15f;
     public float viewAngle = 90f;
     public float attackRange = 0.2f;
-    public float maxHp = 100f;
+    public float maxHp = 30f;
     public float attackDamage = 10f;
 
     private float attackCooldown = 1.5f;
