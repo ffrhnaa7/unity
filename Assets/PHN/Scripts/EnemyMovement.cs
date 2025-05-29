@@ -126,10 +126,11 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private void Chase() //to chase
     {
         navMeshAgent.isStopped = false;
-        float speed = navMeshAgent.velocity.magnitude;
-        m_Animator.SetFloat("Speed", Mathf.Clamp(speed, 0, chaseSpeed));
         navMeshAgent.speed = chaseSpeed;
         navMeshAgent.SetDestination(player.position);
+
+        float speed = navMeshAgent.velocity.magnitude;
+        m_Animator.SetFloat("Speed", Mathf.Clamp(speed, 0f, chaseSpeed));
 
         float distance = Vector3.Distance(transform.position, player.position);
         if (distance <= attackRange) ChangeState(GoblinState.Attack);
@@ -184,9 +185,11 @@ public class GoblinAI : MonoBehaviour, IEnemy
     private void FacePlayer() //ensure it faces player when attack
     {
         Vector3 direction = (player.position - transform.position).normalized;
-        if (direction != Vector3.zero)
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude > 0.01f)
         {
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
         }
     }
