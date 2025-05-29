@@ -1,3 +1,4 @@
+using StarterAssets;
 using UnityEngine;
 
 public class BossTriggerAfterDisappear : MonoBehaviour
@@ -5,6 +6,7 @@ public class BossTriggerAfterDisappear : MonoBehaviour
     public Animator bossAnim;
     public GameObject bossPrefab;
     public BossAI bossAI;
+    public Transform bossTransform;
 
     private void Awake()
     {
@@ -22,6 +24,12 @@ public class BossTriggerAfterDisappear : MonoBehaviour
             bossPrefab.SetActive(true);
             bossAnim.SetTrigger("Trigger");
             Debug.Log("Boss Appear");
+
+            // add by ½Â°Ç
+            PlayerController pc = other.GetComponent<PlayerController>();
+            pc.BossAppear(bossTransform);
+            //
+
             Destroy(gameObject);
         }
     }
