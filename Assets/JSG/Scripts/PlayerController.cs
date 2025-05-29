@@ -403,6 +403,11 @@ namespace StarterAssets
 
                 }
             }
+            else
+            {
+                _animator.SetBool(_animIDGuard, false);
+                _guarding = false;
+            }
         }
         private void Dodge()
         {
