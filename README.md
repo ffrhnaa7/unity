@@ -81,7 +81,7 @@ This project helped us apply and deepen knowledge in:
 
 ## 🧠 Goblin AI Logic
 
-```mermaid
+mermaid
 stateDiagram-v2
     Patrol --> Chase : Sees Player
     Chase --> Attack : In Range
@@ -146,4 +146,5 @@ FSM 기반 고블린 인공지능 (순찰 → 추적 → 공격 → 사망)
 루트 모션 애니메이션 제어
 히트 이펙트, 사운드, 시각적 경고 등
 
-
+즐겁게 플레이해 주세요! 🎮
+팀 SoulsStudio 드림.
