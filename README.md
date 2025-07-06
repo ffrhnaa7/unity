@@ -4,7 +4,7 @@
 
 ---
 
-##🌐 About the Game
+# About the Game
 
 **Maze Soulslike** is a 3D action-adventure game developed as part of the 2025 Capstone Design project at **Kangwon National University** by **Team SoulsStudio**.  
 It draws inspiration from *Soulslike combat mechanics* and *maze-based exploration*. You play as a mysterious warrior trapped in an ancient labyrinth. Navigate deadly corridors, defeat aggressive goblins, and survive with limited health resources. Every decision counts.
@@ -108,7 +108,7 @@ stateDiagram-v2
 
 ---
 
-게임 소개 (Korean)
+# 게임 소개 (Korean)
 
  미로-소울라이크 3D 게임
 Maze Soulslike는 강원대학교 2025 캡스톤디자인 수업의 결과물로, 팀 SoulsStudio가 제작한 액션 게임입니다.
