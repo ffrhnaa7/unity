@@ -81,13 +81,12 @@ This project helped us apply and deepen knowledge in:
 
 ## 🧠 Goblin AI Logic
 
-mermaid
 stateDiagram-v2
-    Patrol --> Chase : Sees Player
-    Chase --> Attack : In Range
-    Attack --> Chase : Player Flees
-    Chase --> Patrol : Lost Sight
-    Attack --> Dead : HP ≤ 0
+    Patrol --> Chase : 플레이어를 발견함
+    Chase --> Attack : 공격 범위에 진입
+    Attack --> Chase : 플레이어 도망감
+    Chase --> Patrol : 플레이어 시야에서 사라짐
+    Attack --> Dead : HP가 0 이하
 ---
 ## 🛠 Tech Stack
 
@@ -103,18 +102,19 @@ stateDiagram-v2
 ## 🗂 Folder Structure
 
 Assets/
-├── Animations/
-├── Audio/
-├── Materials/
-├── Models/
-├── Prefabs/
+├── Animations/         # 애니메이션 클립 및 컨트롤러
+├── Audio/              # 사운드 효과 (발자국, 공격 등)
+├── Materials/          # 머티리얼 및 셰이더
+├── Models/             # 3D 모델 파일 (FBX 등)
+├── Prefabs/            # 프리팹 (고블린, 플레이어, UI 등)
 ├── Scripts/
-│   ├── Enemy/
-│   ├── Player/
-│   └── UI/
-├── Scenes/
-├── UI/
-└── Textures/
+│   ├── Enemy/          # 고블린 AI, 무기 처리 스크립트
+│   ├── Player/         # 플레이어 조작 및 전투 로직
+│   └── UI/             # 체력 바, 게임 UI 관련 스크립트
+├── Scenes/             # 게임 씬
+├── UI/                 # UI 캔버스 구성 요소
+└── Textures/           # 텍스처, 시각 효과용 이미지
+
 
 ---
 ## 👥 Team SoulsStudio (KNU)
