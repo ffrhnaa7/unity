@@ -118,6 +118,7 @@
     <Compile Include="Assets\JSG\Scripts\StateMachineBehaviorSetting.cs" />
     <Compile Include="Assets\JSG\Scripts\DodgeEnd.cs" />
     <Compile Include="Assets\SHD\Scripts\DetectingPlayer.cs" />
+    <Compile Include="Assets\EndlessCaveAmbience\Scripts\RandomMusic.cs" />
     <Compile Include="Assets\JSG\Scripts\InitProperties.cs" />
     <Compile Include="Assets\JSG\Scripts\AnimationMover.cs" />
     <Compile Include="Assets\StarterAssets\ThirdPersonController\Scripts\BasicRigidBodyPush.cs" />
